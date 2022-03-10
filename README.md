@@ -1,4 +1,4 @@
-# Mininet with FRR
+# Networking for learning Routing Protocol made easy with mininet and FRR
 
 This is mininet for learning BGP etc. with FRR.
 
