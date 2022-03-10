@@ -15,3 +15,5 @@ example on `CLI_WITH_VTYSH`
 ```commandline
 mininet> vtysh r1 r2
 ```
+
+![example1](docs/images/ex1.JPG)

@@ -1,6 +1,6 @@
 from jinja2 import Environment, FileSystemLoader
-from mininet.cli import CLI
 
+from mininet.cli import CLI
 from mininet.net import Mininet
 from mininet.log import setLogLevel
 from mininet.node import Node
