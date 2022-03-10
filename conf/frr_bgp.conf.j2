@@ -1,0 +1,17 @@
+{# FRR configuration
+
+-#}
+!
+router bgp {{ as_number }}
+ bgp router-id  {{ router_id }}
+ bgp bestpath as-path multipath-relax
+ neighbor r1-eth0 interface remote-as external
+ neighbor r2-eth0 interface remote-as external
+ address-family ipv4 unicast
+  network {{ router_id }}/32
+  network {{ network }}
+ exit-address-family
+!
+line vty
+!
+end

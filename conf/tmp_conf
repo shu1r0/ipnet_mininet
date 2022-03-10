@@ -1,0 +1,2 @@
+hostname r2
+service integrated-vtysh-config
