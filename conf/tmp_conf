@@ -1,2 +1,5 @@
-hostname r2
-service integrated-vtysh-config
+
+!
+line vty
+!
+end

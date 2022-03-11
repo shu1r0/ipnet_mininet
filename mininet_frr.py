@@ -2,7 +2,7 @@ from jinja2 import Environment, FileSystemLoader
 
 from mininet.cli import CLI
 from mininet.net import Mininet
-from mininet.log import setLogLevel
+from mininet.log import setLogLevel, info
 from mininet.node import Node
 from mininet.term import makeTerm
 
@@ -11,38 +11,52 @@ class FRR(Node):
 
     PrivateDirs = ["/etc/frr", "/var/run/frr"]
 
-    def __init__(self, name, inNamespace=True, enable_daemons=None, **params):
+    def __init__(self, name, inNamespace=True, enable_daemons=None,
+                 template_dir="./conf/", daemons="daemons.j2", vtysh_conf="vtysh.conf.j2", frr_conf="frr.conf.j2", **params):
         """
+
         Args:
-            name: node name
-            inNamespace: in Namespace ??
-            enable_daemons: daemons (ex. enable_daemons={"bgpd": "yes"})
+            name (str) : node name
+            inNamespace (bool) : in Namespace
+            enable_daemons (list) : daemons (ex. enable_daemons=["bgpd"])
+            template_dir (str) : directory for daemons config, vtysh.conf and frr.conf
+            daemons (str) : daemos config file name
+            vtysh_conf (str) : vtysh config file name
+            frr_conf (str) : frr config file name
             **params:
         """
         params.setdefault("privateDirs", [])
         params["privateDirs"].extend(BGPRouter.PrivateDirs)
         super().__init__(name, inNamespace, **params)
 
-        self.template_dir = params.get("template_dir", "./conf/")
-        self.daemons = params.get("daemons", "daemons.j2")
-        self.vtysh_conf = params.get("vtysh_conf", "vtysh.conf.j2")
-        self.frr_conf = params.get("frr_conf", None)
+        self.template_dir = template_dir
+
+        # config files
+        self.daemons = daemons
+        self.vtysh_conf = vtysh_conf
+        self.frr_conf = frr_conf
 
         # default daemons config
         self.daemons_param = {
-            "zebra": "no", "bgpd": "no", "ospfd": "no", "ospf6d": "no", "ripd": "no", "ripngd": "no", "isisd": "no",
+            "zebra": "yes", "bgpd": "no", "ospfd": "no", "ospf6d": "no", "ripd": "no", "ripngd": "no", "isisd": "no",
             "pimd": "no", "ldpd": "no", "nhrpd": "no", "eigrpd": "no", "babeld": "no", "sharpd": "no", "staticd": "no",
             "pbrd": "no", "bfdd": "no", "fabricd": "no"
         }
-        if enable_daemons:
-            self.daemons_param.update(enable_daemons)
+        if isinstance(enable_daemons, list):
+            for daemon in enable_daemons:
+                self.daemons_param[daemon] = "yes"
 
     def start_frr_service(self):
         """start FRR"""
+        self.cmd("sysctl net.ipv4.ip_forward=1")
+
         self.set_daemons()
         self.set_vtysh_conf()
         self.set_frr_conf()
         self.cmd("/usr/lib/frr/frrinit.sh start")
+
+    def terminate(self):
+        self.cmd("sysctl net.ipv4.ip_forward=0")
 
     def set_daemons(self):
         """set daemons conf"""
@@ -52,10 +66,9 @@ class FRR(Node):
         """set vtysh conf"""
         self.render_conf_file("/etc/frr/vtysh.conf", self.vtysh_conf, {"name": self.name})
 
-    def set_frr_conf(self):
+    def set_frr_conf(self, content=""):
         """set FRR conf"""
-        if self.frr_conf:
-            self.render_conf_file("/etc/frr/frr.conf", self.frr_conf)
+        self.render_conf_file("/etc/frr/frr.conf", self.frr_conf, {"content": content})
 
     def render_conf_file(self, file, template_file, params=None):
         """set file"""
@@ -74,18 +87,26 @@ class FRR(Node):
 
 class BGPRouter(FRR):
 
-    def __init__(self, name, inNamespace=True, as_number=None, router_id=None, bgp_network=None, **params):
-        super().__init__(name, inNamespace=inNamespace, enable_daemons={"bgpd": "yes"}, frr_conf="frr_bgp.conf.j2", **params)
+    def __init__(self, name, inNamespace=True, as_number=None, router_id=None, bgp_networks=None, bgp_peers=None, **params):
+        super().__init__(name, inNamespace=inNamespace, enable_daemons=["bgpd"], frr_conf="frr_bgp.conf.j2", **params)
 
         self.as_number = as_number
         self.router_id = router_id
-        self.bgp_network = bgp_network
 
-    def set_frr_conf(self):
+        self.bgp_networks = bgp_networks if bgp_networks is not None else []
+        self.bgp_peers = bgp_peers if bgp_peers is not None else []
+
+    def start_frr_service(self):
+        super().start_frr_service()
+        self.cmd("ip addr add {} dev lo".format(self.router_id))
+
+    def set_frr_conf(self, content=""):
         params = {
+            "content": content,
             "router_id": self.router_id,
-            "network": self.bgp_network,
-            "as_number": self.as_number
+            "networks": self.bgp_networks,
+            "as_number": self.as_number,
+            "peers": self.bgp_peers
         }
         self.render_conf_file("/etc/frr/frr.conf", self.frr_conf, params)
 
@@ -102,24 +123,30 @@ class FRRNetwork(Mininet):
         self.frr_routers.append(r)
         return r
 
-    def addBGPRouter(self, name, as_number=None, router_id=None, bgp_network=None, **params):
-        r = self.addFRR(name=name, cls=BGPRouter, as_number=as_number, router_id=router_id, bgp_network=bgp_network, **params)
-        self.frr_routers.append(r)
+    def addBGPRouter(self, name, as_number=None, router_id=None, bgp_networks=None, bgp_peers=None, **params):
+        r = self.addFRR(name=name, cls=BGPRouter, as_number=as_number, router_id=router_id, bgp_networks=bgp_networks,
+                        bgp_peers=bgp_peers, **params)
         return r
-
 
     def start(self):
         """start mininet and FRR"""
         super().start()
+        info('*** Start FRR service:\n')
         for r in self.frr_routers:
             r.start_frr_service()
+            info(r.name + " ")
+        info("\n")
 
 
-class CLI_WITH_VTYSH(CLI):
+class CLIWithVtysh(CLI):
     """CLI for VTYSH"""
 
     def do_vtysh(self, line):
-        """start vtysh"""
+        """start vtysh
+
+        Examples:
+            mininet> vtysh r1 r2 r3
+        """
         args = line.split()
         for a in args:
             if a in [r.name for r in self.mn.frr_routers]:
@@ -132,8 +159,8 @@ def main():
     net = FRRNetwork()
 
     h1 = net.addHost("h1")
-    r1 = net.addFRR("r1", enable_daemons={"bgpd": "yes"})
-    r2 = net.addFRR("r2", enable_daemons={"bgpd": "yes"})
+    r1 = net.addFRR("r1", enable_daemons=["bgpd"])
+    r2 = net.addFRR("r2", enable_daemons=["bgpd"])
     h2 = net.addHost("h2")
 
     net.addLink(h1, r1)
@@ -141,7 +168,7 @@ def main():
     net.addLink(r2, h2)
 
     net.start()
-    CLI_WITH_VTYSH(net)
+    CLIWithVtysh(net)
     net.stop()
 
 
