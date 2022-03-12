@@ -31,6 +31,8 @@ def main():
                 intfName2="r4-eth0", params2={"ip": "192.168.34.2/24"})
 
     net.start()
+    print(r2.vtysh_cmd("show bgp summary"))
+    print(r3.vtysh_cmd("show bgp summary"))
     CLIWithVtysh(net)
     net.stop()
 

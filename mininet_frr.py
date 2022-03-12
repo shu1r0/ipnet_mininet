@@ -19,10 +19,10 @@ class FRR(Node):
             name (str) : node name
             inNamespace (bool) : in Namespace
             enable_daemons (list) : daemons (ex. enable_daemons=["bgpd"])
-            template_dir (str) : directory for daemons config, vtysh.conf and frr.conf
-            daemons (str) : daemos config file name
-            vtysh_conf (str) : vtysh config file name
-            frr_conf (str) : frr config file name
+            template_dir (str) : directory for daemons, vtysh.conf and frr.conf
+            daemons (str) : daemos config template file name
+            vtysh_conf (str) : vtysh config template file name
+            frr_conf (str) : frr config template file name
             **params:
         """
         params.setdefault("privateDirs", [])
@@ -84,8 +84,17 @@ class FRR(Node):
             f.write(rendered)
         self.cmd("cp {}tmp_conf {}".format(self.template_dir, file))
 
+    def vtysh_cmd(self, cmd=""):
+        """exec vtysh commands"""
+        cmds = cmd.split("\n")
+        vtysh_cmd = "vtysh"
+        for c in cmds:
+            vtysh_cmd += " -c \"{}\"".format(c)
+        return self.cmd(vtysh_cmd)
+
 
 class BGPRouter(FRR):
+    """Simple BGP Router"""
 
     def __init__(self, name, inNamespace=True, as_number=None, router_id=None, bgp_networks=None, bgp_peers=None, **params):
         super().__init__(name, inNamespace=inNamespace, enable_daemons=["bgpd"], frr_conf="frr_bgp.conf.j2", **params)
@@ -118,6 +127,7 @@ class FRRNetwork(Mininet):
         self.frr_routers = []
 
     def addFRR(self, name, cls=FRR, **params):
+        """add FRR"""
         params["ip"] = None
         r = self.addHost(name=name, cls=cls, **params)
         self.frr_routers.append(r)
@@ -159,8 +169,8 @@ def main():
     net = FRRNetwork()
 
     h1 = net.addHost("h1")
-    r1 = net.addFRR("r1", enable_daemons=["bgpd"])
-    r2 = net.addFRR("r2", enable_daemons=["bgpd"])
+    r1 = net.addFRR("r1", enable_daemons=["bgpd", "staticd"])
+    r2 = net.addFRR("r2", enable_daemons=["bgpd", "staticd"])
     h2 = net.addHost("h2")
 
     net.addLink(h1, r1)
