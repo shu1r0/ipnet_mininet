@@ -124,7 +124,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     config.vm.provision 'shell', inline: $FRR
 
     config.vm.synced_folder '.', '/vagrant', disabled: true
-    config.vm.synced_folder './', '/home/vagrant/netwarkLab'
+    config.vm.synced_folder './', '/home/vagrant/networkLab'
 
     # ssh config
     # config.ssh.username = 'vagrant'
@@ -141,15 +141,17 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
         vb.customize [
             "modifyvm", :id,
-            "--vram", "128", # full screen
+            "--vram", "128", 
             "--clipboard", "bidirectional", # clip board
             "--draganddrop", "bidirectional", # drag and drop
-            "--ioapic", "on", # enable I/O APIC
-            "--accelerate3d", "on",
+            "--ioapic", "off", # enable I/O APIC
+            '--graphicscontroller', 'vmsvga',
+            "--accelerate3d", "off",
             "--hwvirtex", "on",
             "--nestedpaging", "on",
             "--largepages", "on",
-            "--pae", "on",
+            "--pae", "off",
+            '--audio', 'none',
             "--description", $description
         ]
     end

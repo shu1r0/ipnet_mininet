@@ -1,6 +1,6 @@
 from mininet.log import setLogLevel
 
-from mininet_frr import FRRNetwork, CLIWithVtysh
+from frrnet.frr_net import FRRNetwork, CLIWithVtysh
 
 
 def main():

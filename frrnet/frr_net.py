@@ -1,4 +1,5 @@
-from jinja2 import Environment, FileSystemLoader
+import pkgutil
+from jinja2 import Template
 
 from mininet.cli import CLI
 from mininet.net import Mininet
@@ -8,18 +9,18 @@ from mininet.term import makeTerm
 
 
 class FRR(Node):
+    """FRR Node"""
 
     PrivateDirs = ["/etc/frr", "/var/run/frr"]
 
     def __init__(self, name, inNamespace=True, enable_daemons=None,
-                 template_dir="./conf/", daemons="daemons.j2", vtysh_conf="vtysh.conf.j2", frr_conf="frr.conf.j2", **params):
+                 daemons=None, vtysh_conf=None, frr_conf=None, frr_conf_content="", **params):
         """
 
         Args:
             name (str) : node name
             inNamespace (bool) : in Namespace
             enable_daemons (list) : daemons (ex. enable_daemons=["bgpd"])
-            template_dir (str) : directory for daemons, vtysh.conf and frr.conf
             daemons (str) : daemos config template file name
             vtysh_conf (str) : vtysh config template file name
             frr_conf (str) : frr config template file name
@@ -29,12 +30,13 @@ class FRR(Node):
         params["privateDirs"].extend(BGPRouter.PrivateDirs)
         super().__init__(name, inNamespace, **params)
 
-        self.template_dir = template_dir
-
         # config files
-        self.daemons = daemons
-        self.vtysh_conf = vtysh_conf
-        self.frr_conf = frr_conf
+        self.daemons = daemons 
+        self.vtysh_conf =  vtysh_conf 
+        self.frr_conf =  frr_conf
+        
+        # frr conf content
+        self.frr_conf_content = frr_conf_content
 
         # default daemons config
         self.daemons_param = {
@@ -60,29 +62,41 @@ class FRR(Node):
 
     def set_daemons(self):
         """set daemons conf"""
-        self.render_conf_file("/etc/frr/daemons", self.daemons, self.daemons_param)
+        if self.daemons:
+            self.render_conf_file("/etc/frr/daemons", self.daemons, self.daemons_param)
+        else:
+            self.render_conf("/etc/frr/daemons", Template(pkgutil.get_data(__name__, "conf/daemons.j2").decode()), self.daemons_param)
 
     def set_vtysh_conf(self):
         """set vtysh conf"""
-        self.render_conf_file("/etc/frr/vtysh.conf", self.vtysh_conf, {"name": self.name})
+        if self.vtysh_conf:
+            self.render_conf_file("/etc/frr/vtysh.conf", self.vtysh_conf, {"name": self.name})
+        else:
+            self.render_conf("/etc/frr/vtysh.conf", Template(pkgutil.get_data(__name__, "conf/vtysh.conf.j2").decode()), {"name": self.name})
 
-    def set_frr_conf(self, content=""):
+    def set_frr_conf(self):
         """set FRR conf"""
-        self.render_conf_file("/etc/frr/frr.conf", self.frr_conf, {"content": content})
+        if self.frr_conf:
+            self.render_conf_file("/etc/frr/frr.conf", self.frr_conf, {"content": self.frr_conf_content})
+        else:
+            self.render_conf("/etc/frr/frr.conf",  Template(pkgutil.get_data(__name__, "conf/frr.conf.j2").decode()), {"content": self.frr_conf_content})
 
     def render_conf_file(self, file, template_file, params=None):
         """set file"""
-        env = Environment(
-            loader=FileSystemLoader(self.template_dir),
-            trim_blocks=True
-        )
-        template = env.get_template(template_file)
+        template = None
+        with open(template_file) as t:
+            template = Template(t.read())
+        self.render_conf(file, template, params)
+
+    def render_conf(self, file, template, params=None):
+        """render conf"""
         if params is None:
             params = {}
         rendered = template.render(**params)
-        with open(self.template_dir + "tmp_conf", 'w') as f:
-            f.write(rendered)
-        self.cmd("cp {}tmp_conf {}".format(self.template_dir, file))
+        self.cmd( """\
+cat << 'EOF' | tee {}
+{}
+EOF""".format(file, rendered))
 
     def vtysh_cmd(self, cmd=""):
         """exec vtysh commands"""
@@ -91,13 +105,17 @@ class FRR(Node):
         for c in cmds:
             vtysh_cmd += " -c \"{}\"".format(c)
         return self.cmd(vtysh_cmd)
+    
+    def tcpdump(self, intf):
+        cmd = "tcppdump -i " + intf + " -w " + intf + ".pcap &"
+        return self.cmd(cmd)
 
 
 class BGPRouter(FRR):
     """Simple BGP Router"""
 
     def __init__(self, name, inNamespace=True, as_number=None, router_id=None, bgp_networks=None, bgp_peers=None, **params):
-        super().__init__(name, inNamespace=inNamespace, enable_daemons=["bgpd"], frr_conf="frr_bgp.conf.j2", **params)
+        super().__init__(name, inNamespace=inNamespace, enable_daemons=["bgpd"], frr_conf=None, **params)
 
         self.as_number = as_number
         self.router_id = router_id
@@ -117,7 +135,10 @@ class BGPRouter(FRR):
             "as_number": self.as_number,
             "peers": self.bgp_peers
         }
-        self.render_conf_file("/etc/frr/frr.conf", self.frr_conf, params)
+        if self.frr_conf:
+            self.render_conf_file("/etc/frr/frr.conf", self.frr_conf, params)
+        else:
+            self.render_conf("/etc/frr/frr.conf", Template(pkgutil.get_data(__name__, "conf/frr_bgp.conf.j2").decode()), params)
 
 
 class FRRNetwork(Mininet):
