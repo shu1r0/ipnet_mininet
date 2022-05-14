@@ -27,7 +27,7 @@ class FRR(Node):
             **params:
         """
         params.setdefault("privateDirs", [])
-        params["privateDirs"].extend(BGPRouter.PrivateDirs)
+        params["privateDirs"].extend(self.PrivateDirs)
         super().__init__(name, inNamespace, **params)
 
         # config files
@@ -58,6 +58,7 @@ class FRR(Node):
         self.cmd("/usr/lib/frr/frrinit.sh start")
 
     def terminate(self):
+        super(FRR, self).terminate()
         self.cmd("sysctl net.ipv4.ip_forward=0")
 
     def set_daemons(self):
@@ -144,7 +145,7 @@ class BGPRouter(FRR):
 class FRRNetwork(Mininet):
 
     def __init__(self, **params):
-        super().__init__(params)
+        super().__init__(**params)
         self.frr_routers = []
 
     def addFRR(self, name, cls=FRR, **params):
