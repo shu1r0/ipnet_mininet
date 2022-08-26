@@ -1,6 +1,6 @@
 # IP Network Experiments (ipnet)
 
-IPnet is mininet extentions for learning OSPF, BGP, SRv6 and more.
+`ipnet` is mininet extentions for learning OSPF, BGP, SRv6 and more.
 
 ## install
 1. install mininet

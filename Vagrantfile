@@ -81,7 +81,7 @@ sudo apt install -y frr
 SCRIPT
 
 # ------------------------------------------------------------
-# # vagrant configure version 2
+# vagrant configure version 2
 # ------------------------------------------------------------
 VAGRANTFILE_API_VERSION = "2"
 Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
