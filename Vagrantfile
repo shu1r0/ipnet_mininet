@@ -98,7 +98,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     # install package
     config.vm.provision 'shell', inline: $install_package
     config.vm.provision 'shell', inline: $install_mininet
-    config.vm.provision 'shell', inline: $install_lubuntu
+    # config.vm.provision 'shell', inline: $install_lubuntu
     config.vm.provision 'shell', inline: $install_frr
 
     # config virtual box
