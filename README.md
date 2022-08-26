@@ -58,7 +58,7 @@ if __name__ == "__main__":
 
 ## start vtysh
 
-example on `vtysh`
+example of `vtysh`
 
 ```commandline
 mininet> vtysh r1 r2
