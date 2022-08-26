@@ -10,7 +10,7 @@
 git clone https://github.com/shu1r0/ip_network_experiments.git
 cd ip_network_experiments
 sudo pip install -r requirements.txt
-sudo pip install -e .
+sudo pip install .
 ```
 
 ## Example
