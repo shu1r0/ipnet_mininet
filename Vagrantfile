@@ -32,19 +32,19 @@ sudo apt -y install wireshark-dev
 
 sudo pip3 install --upgrade pip
 
-sudo timedatectl set-timezone Asia/Tokyo
-sudo cat << 'EOF' | sudo tee /etc/default/keyboard
-# KEYBOARD CONFIGURATION FILE
+# sudo timedatectl set-timezone Asia/Tokyo
+# sudo cat << 'EOF' | sudo tee /etc/default/keyboard
+# # KEYBOARD CONFIGURATION FILE
 
-# Consult the keyboard(5) manual page.
+# # Consult the keyboard(5) manual page.
 
-XKBMODEL="pc105"
-XKBLAYOUT="jp"
-XKBVARIANT=""
-XKBOPTIONS=""
+# XKBMODEL="pc105"
+# XKBLAYOUT="jp"
+# XKBVARIANT=""
+# XKBOPTIONS=""
 
-BACKSPACE="guess"
-EOF
+# BACKSPACE="guess"
+# EOF
 SCRIPT
 
 
@@ -81,16 +81,6 @@ sudo apt install -y frr
 SCRIPT
 
 # ------------------------------------------------------------
-# update iproute2
-# ------------------------------------------------------------
-$update_iproute2 = <<SCRIPT
-git clone https://github.com/shemminger/iproute2.git
-cd iproute2/
-make
-sudo make DOCDIR=/usr/share/doc/iproute2-latest install
-SCRIPT
-
-# ------------------------------------------------------------
 # # vagrant configure version 2
 # ------------------------------------------------------------
 VAGRANTFILE_API_VERSION = "2"
@@ -110,7 +100,6 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     config.vm.provision 'shell', inline: $install_mininet
     config.vm.provision 'shell', inline: $install_lubuntu
     config.vm.provision 'shell', inline: $install_frr
-    config.vm.provision 'shell', inline: $update_iproute2
 
     # config virtual box
     config.vm.provider "virtualbox" do |vb|
