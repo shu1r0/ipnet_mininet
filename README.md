@@ -40,6 +40,8 @@ router ospf
   network 192.168.1.0/24 area 0.0.0.0
 """
 
+![simple_2](./examples/simple/simple_2.drawio.png)
+
 def run():
     setLogLevel("info")
     net = IPNetwork()
