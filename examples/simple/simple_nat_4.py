@@ -1,5 +1,7 @@
 from mininet.log import setLogLevel
+from mininet.nodelib import NAT
 from ipnet import IPNetwork, CLIX
+
 
 r1_conf = """\
 configure terminal
@@ -23,12 +25,26 @@ router ospf
   network 192.168.1.0/24 area 0.0.0.0
 """
 
+
 def setup() -> IPNetwork:
     setLogLevel("info")
     net = IPNetwork()
     r1 = net.addFRR('r1', enable_daemons=["ospfd"])
     r2 = net.addFRR('r2', enable_daemons=["ospfd"])
     net.addLink(r1, r2, intfName1="r1_r2", intfName2="r2_r1")
+    
+    # Create NAT node
+    nat = net.addHost(
+        "nat1",
+        cls=NAT,
+        ip="10.0.14.1",
+        subnet='10.0.0.0/16',
+        localInf="r1_nat",
+        inNamespace=False,
+    )
+    
+    net.addLink(r1, nat, intfName1="r1_nat", intfName2="nat_r1")
+    
     net.start()
     r1.vtysh_cmd(r1_conf)
     r2.vtysh_cmd(r2_conf)
@@ -40,4 +56,3 @@ if __name__ == "__main__":
     net = setup()
     CLIX(net)
     net.stop()
-

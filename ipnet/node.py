@@ -1,3 +1,10 @@
+"""
+
+References:
+    * https://github.com/FRRouting/frr/blob/c143b875193c0ec4eaaeb1f0ddb2c744bd04ba3c/tests/topotests/lib/topogen.py
+    * https://blog.bobuhiro11.net/2021/05-08-mininet_frr.html
+"""
+
 import pkgutil
 from jinja2 import Template
 from mininet.node import Node
@@ -21,17 +28,21 @@ class RouterBase(Node):
         self.cmd("sysctl -w net.ipv6.conf.all.forwarding=0")
         super().terminate()
 
-    def setIPCmd(self, ip, intf_name):
+    def set_ip_cmd(self, ip, intf_name):
         self.cmd("ip addr add {} dev {}".format(ip, intf_name))
 
-    def setIPv6Cmd(self, ipv6, intf_name):
+    def set_ipv6_cmd(self, ipv6, intf_name):
         self.cmd("ip -6 addr add {} dev {}".format(ipv6, intf_name))
+
+    def tcpdump(self, intf):
+        cmd = "tcppdump -i " + intf + " -w " + intf + ".pcap &"
+        return self.cmd(cmd)
 
 
 class FRR(RouterBase):
     """FRR Node"""
 
-    PrivateDirs = ["/etc/frr", "/var/run/frr"]
+    PrivateDirs = ["/etc/frr", "/etc/snmp", "/var/run/frr", "/var/log"]
 
     def __init__(self, name, inNamespace=True, enable_daemons=None,
                  daemons=None, vtysh_conf=None, frr_conf=None, frr_conf_content="", **params):
@@ -74,6 +85,10 @@ class FRR(RouterBase):
         self.set_vtysh_conf()
         self.set_frr_conf()
         self.cmd("/usr/lib/frr/frrinit.sh start")
+    
+    def terminate(self):
+        self.cmd("/usr/lib/frr/frrinit.sh stop")
+        super().terminate()
 
     def set_daemons(self):
         """set daemons conf"""
@@ -122,10 +137,6 @@ EOF""".format(file, rendered))
         for c in cmds:
             vtysh_cmd += " -c \"{}\"".format(c)
         return self.cmd(vtysh_cmd)
-
-    def tcpdump(self, intf):
-        cmd = "tcppdump -i " + intf + " -w " + intf + ".pcap &"
-        return self.cmd(cmd)
 
 
 class SimpleBGPRouter(FRR):

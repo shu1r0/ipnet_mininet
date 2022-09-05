@@ -3,7 +3,7 @@ from mininet.log import setLogLevel
 from ipnet import IPNetwork, CLIX
 
 
-def main():
+def setup() -> IPNetwork:
     setLogLevel("info")
     net = IPNetwork()
 
@@ -33,12 +33,11 @@ def main():
     net.start()
     print(r2.vtysh_cmd("show bgp summary"))
     print(r3.vtysh_cmd("show bgp summary"))
-    
+
+    return net
+
+
+if __name__ == "__main__":
+    net = setup()
     CLIX(net)
-    
     net.stop()
-
-
-if __name__ == '__main__':
-    main()
-

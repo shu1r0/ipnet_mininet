@@ -3,7 +3,7 @@ from mininet.log import setLogLevel
 from ipnet import IPNetwork, CLIX
 
 
-def run():
+def setup() -> IPNetwork:
     setLogLevel("info")
     net = IPNetwork()
 
@@ -35,35 +35,35 @@ def run():
 
     net.get("h1").cmd("ip -6 addr add fc00:1::1/64 dev h1_r1")
     net.get("h1").cmd("ip -6 route add default dev h1_r1 via fc00:1::2")
-    net.get("r1").setIPv6Cmd("fc00:1::2/64", "r1_h1")
+    net.get("r1").set_ipv6_cmd("fc00:1::2/64", "r1_h1")
 
     net.get("h2").cmd("ip -6 addr add fc00:2::1/64 dev h2_r4")
     net.get("h2").cmd("ip -6 route add default dev h2_r4 via fc00:2::2")
-    net.get("r4").setIPv6Cmd("fc00:2::2/64", "r4_h2")
+    net.get("r4").set_ipv6_cmd("fc00:2::2/64", "r4_h2")
 
-    net.get("r1").setIPv6Cmd("fc00:a::1/64", "r1_r2")
-    net.get("r2").setIPv6Cmd("fc00:a::2/64", "r2_r1")
+    net.get("r1").set_ipv6_cmd("fc00:a::1/64", "r1_r2")
+    net.get("r2").set_ipv6_cmd("fc00:a::2/64", "r2_r1")
 
-    net.get("r1").setIPv6Cmd("fc00:b::1/64", "r1_r3")
-    net.get("r3").setIPv6Cmd("fc00:b::2/64", "r3_r1")
+    net.get("r1").set_ipv6_cmd("fc00:b::1/64", "r1_r3")
+    net.get("r3").set_ipv6_cmd("fc00:b::2/64", "r3_r1")
 
-    net.get("r2").setIPv6Cmd("fc00:c::1/64", "r2_r3")
-    net.get("r3").setIPv6Cmd("fc00:c::2/64", "r3_r2")
+    net.get("r2").set_ipv6_cmd("fc00:c::1/64", "r2_r3")
+    net.get("r3").set_ipv6_cmd("fc00:c::2/64", "r3_r2")
 
-    net.get("r2").setIPv6Cmd("fc00:d::1/64", "r2_r4")
-    net.get("r4").setIPv6Cmd("fc00:d::2/64", "r4_r2")
+    net.get("r2").set_ipv6_cmd("fc00:d::1/64", "r2_r4")
+    net.get("r4").set_ipv6_cmd("fc00:d::2/64", "r4_r2")
 
-    net.get("r3").setIPv6Cmd("fc00:e::1/64", "r3_r4")
-    net.get("r4").setIPv6Cmd("fc00:e::2/64", "r4_r3")
+    net.get("r3").set_ipv6_cmd("fc00:e::1/64", "r3_r4")
+    net.get("r4").set_ipv6_cmd("fc00:e::2/64", "r4_r3")
 
     # add route
     net.get("r1").cmd("ip -6 route add fc00:2::1/128 encap seg6 mode inline segs fc00:a::2,fc00:d::2 dev r1_r2")
     net.get("r4").cmd("ip -6 route add fc00:1::1/128 encap seg6 mode inline segs fc00:e::1,fc00:b::1 dev r4_r3")
 
-    CLIX(net)
-
-    net.stop()
+    return net
 
 
 if __name__ == "__main__":
-    run()
+    net = setup()
+    CLIX(net)
+    net.stop()

@@ -1,4 +1,5 @@
 from mininet.net import Mininet
+from mininet.node import Node
 from mininet.log import setLogLevel, info
 
 from .node import RouterBase, SimpleBGPRouter, FRR, SRv6Node
@@ -15,7 +16,6 @@ class IPNetwork(Mininet):
 
     def addFRR(self, name, cls=FRR, **params) -> FRR:
         """add FRR"""
-        params["ip"] = None
         r = self.addHost(name=name, cls=cls, **params)
         self.frr_routers.append(r)
         return r
@@ -38,16 +38,19 @@ class IPNetwork(Mininet):
         info("\n")
 
     def add_mgmt_network(self, controller_name, controller_cls=RouterBase, inNamespace=False,
-                         cls=RouterBase, ip_base="10.10.{}.{}/24"):
+                         cls=RouterBase, ip_base="10.10.{subnet}.{nodes}/24"):
         ip_count = 1
         controller = self.addRouter(controller_name, cls=controller_cls, inNamespace=inNamespace)
         for name, node in self.nameToNode.items():
             if name != controller_name and isinstance(node, cls):
                 self.addLink(node.name, controller,
-                             intfName1="{}_{}".format(node.name, controller.name), params1={"ip": ip_base.format(ip_count, 1)},
-                             intfName2="{}_{}".format(controller.name, node.name), params2={"ip": ip_base.format(ip_count, 2)})
+                             intfName1="{}_{}".format(node.name, controller.name), params1={"ip": ip_base.format(subnet=ip_count, nodes=1)},
+                             intfName2="{}_{}".format(controller.name, node.name), params2={"ip": ip_base.format(subnet=ip_count, nodes=2)})
                 ip_count += 1
         return controller
+
+    def get_nodes_by_cls(self, cls=Node):
+        return [n for n in self.nameToNode.values() if isinstance(n, cls)]
 
     def cmd_nodes(self, cmd, cls=None):
         for n in self.nameToNode.values():

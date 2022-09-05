@@ -181,7 +181,7 @@ class MPLSNode(FRR):
 
 
 
-def main():
+def setup() -> IPNetwork:
     setLogLevel("info")
     net = IPNetwork()
 
@@ -260,10 +260,10 @@ def main():
     r5.vtysh_cmd(r5_conf)
     r6.vtysh_cmd(r6_conf)
 
-    CLIX(net)
-    
-    net.stop()
+    return net
 
 
 if __name__ == "__main__":
-    main()
+    net = setup()
+    CLIX(net)
+    net.stop()

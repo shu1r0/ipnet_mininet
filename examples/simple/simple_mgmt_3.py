@@ -23,18 +23,23 @@ router ospf
   network 192.168.1.0/24 area 0.0.0.0
 """
 
-def run():
+
+def setup() -> IPNetwork:
     setLogLevel("info")
     net = IPNetwork()
     r1 = net.addFRR('r1', enable_daemons=["ospfd"])
     r2 = net.addFRR('r2', enable_daemons=["ospfd"])
-    c1 = net.add_mgmt_network(controller_name="c1", ip_base="10.20.{}.{}/24")
+    c1 = net.add_mgmt_network(controller_name="c1", ip_base="10.20.{subnet}.{nodes}/24")
     net.addLink(r1, r2, intfName1="r1_r2", intfName2="r2_r1")
     net.start()
     r1.vtysh_cmd(r1_conf)
     r2.vtysh_cmd(r2_conf)
+
+    return net
+
+
+if __name__ == "__main__":
+    net = setup()
     CLIX(net)
     net.stop()
-    
-if __name__ == "__main__":
-    run()
+

@@ -143,7 +143,7 @@ class CoreRouter(SRv6Node):
     pass
 
 
-def run():
+def setup() -> IPNetwork:
     setLogLevel("info")
     net = IPNetwork()
 
@@ -195,13 +195,13 @@ def run():
     for i, n in enumerate(net.nameToNode.values(), start=1):
         if isinstance(n, Spine):
             format_dict["node"] = "a" + str(i)
-            n.setIPv6Cmd(sid_format.format(**format_dict), "lo")
+            n.set_ipv6_cmd(sid_format.format(**format_dict), "lo")
         if isinstance(n, Leaf):
             format_dict["node"] = "b" + str(i)
-            n.setIPv6Cmd(sid_format.format(**format_dict), "lo")
+            n.set_ipv6_cmd(sid_format.format(**format_dict), "lo")
         if isinstance(n, ExternalRouter):
             format_dict["node"] = "c" + str(i)
-            n.setIPv6Cmd(sid_format.format(**format_dict), "lo")
+            n.set_ipv6_cmd(sid_format.format(**format_dict), "lo")
     
     def set_link(n1, n2, **params):
         """set link between node1 and node2"""
@@ -231,8 +231,8 @@ def run():
             net.addLink(r, n, 
                         intfName1=intf1, params1={"ip": ipv4_1},
                         intfName2=intf2, params2={"ip": ipv4_2})
-            r.setIPv6Cmd(ipv6_1, intf1)
-            n.setIPv6Cmd(ipv6_2, intf2)
+            r.set_ipv6_cmd(ipv6_1, intf1)
+            n.set_ipv6_cmd(ipv6_2, intf2)
             
             n.cmd("ip route add default dev {} via {}".format(intf2, ipv4_1.split("/")[0]))
             n.cmd("ip -6 route add default dev {} via {}".format(intf2, ipv6_1.split("/")[0]))
@@ -321,10 +321,10 @@ def run():
     set_frr_core(co1, "4.4.4.1", 65200)
     set_frr_core(co2, "4.4.4.2", 65200)
 
-    CLIX(net)
-    
-    net.stop()
+    return net
 
 
 if __name__ == "__main__":
-    run()
+    net = setup()
+    CLIX(net)
+    net.stop()
