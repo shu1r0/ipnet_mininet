@@ -16,7 +16,7 @@ configure terminal
 
 interface r1_h1
   ip ospf area 0
-interface r1_h3
+interface r1_h2
   ip ospf area 0
 interface r1_r2
   ip ospf area 0

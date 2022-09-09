@@ -67,3 +67,9 @@ mininet> vtysh r1 r2
 ```
 
 ![example1](docs/images/ex1.JPG)
+
+
+## Test
+```bash
+sudo python3 -m unittest discover examples
+```

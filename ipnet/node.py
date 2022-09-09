@@ -12,8 +12,27 @@ from mininet.node import Node
 from .node_helpers import enable_srv6, disable_rp
 
 
-class RouterBase(Node):
-    """IPv6 Node"""
+class IPNode(Node):
+    
+    def config(self, **params):
+        self.cmd("ifconfig lo up")
+
+    def set_ip_cmd(self, ip, intf_name):
+        self.cmd("ip addr add {} dev {}".format(ip, intf_name))
+
+    def set_ipv6_cmd(self, ipv6, intf_name):
+        self.cmd("ip -6 addr add {} dev {}".format(ipv6, intf_name))
+    
+    def add_default_route_cmd(self, intf: str, nexthop: str):
+        self.cmd("ip route add default dev {} via {}".format(intf, nexthop))
+
+    def tcpdump(self, intf):
+        cmd = "tcpdump -i " + intf + " -w " + intf + ".pcap &"
+        return self.cmd(cmd)
+
+
+class RouterBase(IPNode):
+    """Router Node"""
 
     def __init__(self, name, **params):
         super().__init__(name, **params)
@@ -27,16 +46,6 @@ class RouterBase(Node):
         self.cmd("sysctl -w net.ipv4.ip_forward=0")
         self.cmd("sysctl -w net.ipv6.conf.all.forwarding=0")
         super().terminate()
-
-    def set_ip_cmd(self, ip, intf_name):
-        self.cmd("ip addr add {} dev {}".format(ip, intf_name))
-
-    def set_ipv6_cmd(self, ipv6, intf_name):
-        self.cmd("ip -6 addr add {} dev {}".format(ipv6, intf_name))
-
-    def tcpdump(self, intf):
-        cmd = "tcppdump -i " + intf + " -w " + intf + ".pcap &"
-        return self.cmd(cmd)
 
 
 class FRR(RouterBase):
