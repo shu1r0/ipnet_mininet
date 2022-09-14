@@ -6,7 +6,7 @@ def setup() -> IPNetwork:
     setLogLevel("info")
     net = IPNetwork()
     
-    r1 = net.addFRR('r1')
+    r1 = net.addRouter('r1')
     h1: IPNode = net.addHost("h1", cls=IPNode)
     h2: IPNode = net.addHost("h2", cls=IPNode)
     
@@ -17,14 +17,14 @@ def setup() -> IPNetwork:
                 intfName1="r1_h2", params1={"ip": "192.168.20.1/24"},
                 intfName2="h2_r1", params2={"ip": "192.168.20.2/24"})
     
-    add_vxlan_intf_cmd(h1, "h1_r1", 100, intf_ip="172.16.10.1/24", remote_ip="192.168.20.2")
-    add_vxlan_intf_cmd(h2, "h2_r1", 100, intf_ip="172.16.10.2/24", remote_ip="192.168.10.2")
+    add_vxlan_intf_cmd(h1, 100, intf_ip="172.16.10.1/24", vxlan_dev="h1_r1", remote_ip="192.168.20.2")
+    add_vxlan_intf_cmd(h2, 100, intf_ip="172.16.10.2/24", vxlan_dev="h2_r1", remote_ip="192.168.10.2")
     
     h1.add_default_route_cmd("h1_r1", "192.168.10.1")
     h2.add_default_route_cmd("h2_r1", "192.168.20.1")
     
-    h1.tcpdump("h1_r1")
-    h2.tcpdump("h2_r1")
+    # h1.tcpdump("h1_r1")
+    # h2.tcpdump("h2_r1")
     
     net.start()
     

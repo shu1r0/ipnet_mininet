@@ -9,7 +9,7 @@ import pkgutil
 from jinja2 import Template
 from mininet.node import Node
 
-from .node_helpers import enable_srv6, disable_rp
+from .node_helpers import enable_srv6, disable_rp, set_arp_for_router
 
 
 class IPNode(Node):
@@ -41,6 +41,8 @@ class RouterBase(IPNode):
         self.cmd("ifconfig lo up")
         self.cmd("sysctl -w net.ipv4.ip_forward=1")
         self.cmd("sysctl -w net.ipv6.conf.all.forwarding=1")
+        set_arp_for_router(self)
+        disable_rp(self)
 
     def terminate(self):
         self.cmd("sysctl -w net.ipv4.ip_forward=0")
