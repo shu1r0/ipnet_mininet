@@ -1,7 +1,3 @@
-import sys
-import os
-sys.path.append(os.path.join(os.path.dirname(__file__), '../'))
-
 from mininet.log import setLogLevel
 
 from ipnet import IPNetwork, SRv6Node, FRR, CLIX
@@ -147,16 +143,15 @@ def setup() -> IPNetwork:
     # set SRv6 SID
     sid_format = "fc00:bbbb:bbbb:bbbb:{node}:{func}:0:{args}/80"
     format_dict = {"node": -1, "func": 1, "args": 0}
-    for i, n in enumerate(net.nameToNode.values(), start=1):
-        if isinstance(n, SuperSpine):
-            format_dict["node"] = "a" + str(i)
-            n.set_ipv6_cmd(sid_format.format(**format_dict), "lo")
-        if isinstance(n, Spine):
-            format_dict["node"] = "b" + str(i)
-            n.set_ipv6_cmd(sid_format.format(**format_dict), "lo")
-        if isinstance(n, Leaf):
-            format_dict["node"] = "c" + str(i)
-            n.set_ipv6_cmd(sid_format.format(**format_dict), "lo")
+    for i, n in enumerate(net.get_nodes_by_cls(SuperSpine), start=1):
+        format_dict["node"] = "a" + str(i)
+        n.set_ipv6_cmd(sid_format.format(**format_dict), "lo")
+    for i, n in enumerate(net.get_nodes_by_cls(Spine), start=1):
+        format_dict["node"] = "a" + str(i)
+        n.set_ipv6_cmd(sid_format.format(**format_dict), "lo")
+    for i, n in enumerate(net.get_nodes_by_cls(Leaf), start=1):
+        format_dict["node"] = "a" + str(i)
+        n.set_ipv6_cmd(sid_format.format(**format_dict), "lo")
     
     def set_link(n1, n2):
         """set link between node1 and node2"""

@@ -29,7 +29,7 @@ def setup() -> IPNetwork:
     net = IPNetwork()
     r1 = net.addFRR('r1', enable_daemons=["ospfd"])
     r2 = net.addFRR('r2', enable_daemons=["ospfd"])
-    c1 = net.add_mgmt_network(controller_name="c1", ip_base="10.20.{subnet}.{nodes}/24")
+    c1 = net.add_mgmt_network(controller_name="c1", ip_base="10.20.{subnet}.{node}/24")
     net.addLink(r1, r2, intfName1="r1_r2", intfName2="r2_r1")
     net.start()
     r1.vtysh_cmd(r1_conf)

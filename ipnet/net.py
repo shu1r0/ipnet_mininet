@@ -39,14 +39,16 @@ class IPNetwork(Mininet):
         info("\n")
 
     def add_mgmt_network(self, controller_name, controller_cls=RouterBase, inNamespace=False,
-                         cls=RouterBase, ip_base="10.10.{subnet}.{nodes}/24"):
+                         cls=RouterBase, ip_base="10.10.{subnet}.{node}/24"):
+        info('*** Set MGMT Network:\n')
         ip_count = 1
         controller = self.addRouter(controller_name, cls=controller_cls, inNamespace=inNamespace)
         for name, node in self.nameToNode.items():
             if name != controller_name and isinstance(node, cls):
                 self.addLink(node.name, controller,
-                             intfName1="{}_{}".format(node.name, controller.name), params1={"ip": ip_base.format(subnet=ip_count, nodes=1)},
-                             intfName2="{}_{}".format(controller.name, node.name), params2={"ip": ip_base.format(subnet=ip_count, nodes=2)})
+                             intfName1="{}_{}".format(node.name, controller.name), params1={"ip": ip_base.format(subnet=ip_count, node=1)},
+                             intfName2="{}_{}".format(controller.name, node.name), params2={"ip": ip_base.format(subnet=ip_count, node=2)})
+                info("{}'s mgmt inteface ip address : {}\n".format(name, ip_base.format(subnet=ip_count, node=1)))
                 ip_count += 1
         return controller
 
