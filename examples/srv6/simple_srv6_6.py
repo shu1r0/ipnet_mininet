@@ -8,10 +8,10 @@ def setup() -> IPNetwork:
     net = IPNetwork()
 
     for i in range(1, 5):
-        net.addSRv6Node("r{}".format(i), inNamespace=True)
+        net.addSRv6Router("r{}".format(i), inNamespace=True)
         
-    h1 = net.addSRv6Node('h1')
-    h2 = net.addSRv6Node('h2')
+    h1 = net.addSRv6Router('h1')
+    h2 = net.addSRv6Router('h2')
 
     net.addLink("r1", h1,
                 intfName1="r1_h1", params1={"ip": "192.168.1.1/24"},

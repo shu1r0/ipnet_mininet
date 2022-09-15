@@ -1,6 +1,16 @@
 from mininet.node import Node
 
 
+def enable_forwarding(node: Node, verbose=False):
+    node.cmd("sysctl -w net.ipv4.ip_forward=1", verbose=verbose)
+    node.cmd("sysctl -w net.ipv6.conf.all.forwarding=1", verbose=verbose)
+
+
+def disable_forwarding(node: Node, verbose=False):
+    node.cmd("sysctl -w net.ipv4.ip_forward=0", verbose=verbose)
+    node.cmd("sysctl -w net.ipv6.conf.all.forwarding=0", verbose=verbose)
+
+
 def enable_srv6(node: Node, seg6_require_hmac=0, verbose=False):
     node.cmd("sysctl -w net.ipv4.ip_forward=1", verbose=verbose)
     node.cmd("sysctl -w net.ipv6.conf.all.forwarding=1", verbose=verbose)
@@ -132,4 +142,3 @@ def add_vxlan_bridge_cmd(node: Node, vxlan_id: int, intf_ip: str, vxlan_dev: str
     
     node.cmd("ip link set dev {} promisc on".format(vxlan_intf), verbose=verbose)
     return bridge
-

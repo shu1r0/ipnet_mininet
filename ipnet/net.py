@@ -3,7 +3,7 @@ from mininet.net import Mininet
 from mininet.node import Node
 from mininet.log import setLogLevel, info, output
 
-from .node import RouterBase, SimpleBGPRouter, FRR, SRv6Node
+from .node import RouterBase, SimpleBGPRouter, FRR, SRv6Router
 
 
 class IPNetwork(Mininet):
@@ -26,7 +26,7 @@ class IPNetwork(Mininet):
                         bgp_peers=bgp_peers, **params)
         return r
 
-    def addSRv6Node(self, name, cls=SRv6Node, **params) -> SRv6Node:
+    def addSRv6Router(self, name, cls=SRv6Router, **params) -> SRv6Router:
         return self.addFRR(name, cls=cls, **params)
 
     def start(self):

@@ -9,7 +9,7 @@ import pkgutil
 from jinja2 import Template
 from mininet.node import Node
 
-from .node_helpers import enable_srv6, disable_rp, set_arp_for_router
+from .node_helpers import disable_forwarding, enable_forwarding, enable_srv6, disable_rp, set_arp_for_router
 
 
 class IPNode(Node):
@@ -38,19 +38,24 @@ class RouterBase(IPNode):
         super().__init__(name, **params)
 
     def config(self, **params):
-        self.cmd("ifconfig lo up")
-        self.cmd("sysctl -w net.ipv4.ip_forward=1")
-        self.cmd("sysctl -w net.ipv6.conf.all.forwarding=1")
+        super(RouterBase, self).config(**params)
+        enable_forwarding(self)
         set_arp_for_router(self)
         disable_rp(self)
 
     def terminate(self):
-        self.cmd("sysctl -w net.ipv4.ip_forward=0")
-        self.cmd("sysctl -w net.ipv6.conf.all.forwarding=0")
+        disable_forwarding(self)
         super().terminate()
 
 
-class FRR(RouterBase):
+class SRv6Router(RouterBase):
+
+    def config(self, **params):
+        super(SRv6Router, self).config(**params)
+        enable_srv6(self)
+
+
+class FRR(SRv6Router):
     """FRR Node"""
 
     PrivateDirs = ["/etc/frr", "/etc/snmp", "/var/run/frr", "/var/log"]
@@ -178,11 +183,3 @@ class SimpleBGPRouter(FRR):
             self.render_conf_file("/etc/frr/frr.conf", self.frr_conf, params)
         else:
             self.render_conf("/etc/frr/frr.conf", Template(pkgutil.get_data(__name__, "conf/frr_bgp.conf.j2").decode()), params)
-
-
-class SRv6Node(FRR):
-
-    def config(self, **params):
-        super(SRv6Node, self).config(**params)
-        enable_srv6(self)
-        disable_rp(self)

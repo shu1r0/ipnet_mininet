@@ -1,7 +1,7 @@
 from mininet.nodelib import NAT
 from mininet.log import setLogLevel
 
-from ipnet import IPNetwork, SRv6Node, FRR, CLIX
+from ipnet import IPNetwork, FRR, CLIX, IPNode
 
 
 spine_conf = """\
@@ -123,19 +123,19 @@ router bgp {as_number}
 """
 
 
-class Leaf(SRv6Node):
+class Leaf(FRR):
     pass
 
 
-class Spine(SRv6Node):
+class Spine(FRR):
     pass
 
 
-class ExternalRouter(SRv6Node):
+class ExternalRouter(FRR):
     pass
 
 
-class CoreRouter(SRv6Node):
+class CoreRouter(FRR):
     pass
 
 
@@ -172,14 +172,14 @@ def setup() -> IPNetwork:
     co2 = net.addFRR("co2", cls=CoreRouter, enable_daemons=["bgpd"])
 
     # Host
-    h1 = net.addHost("h1", cls=SRv6Node)
-    h2 = net.addHost("h2", cls=SRv6Node)
-    h3 = net.addHost("h3", cls=SRv6Node)
-    h4 = net.addHost("h4", cls=SRv6Node)
-    h5 = net.addHost("h5", cls=SRv6Node)
-    h6 = net.addHost("h6", cls=SRv6Node)
-    h7 = net.addHost("h7", cls=SRv6Node)
-    h8 = net.addHost("h8", cls=SRv6Node)
+    h1 = net.addHost("h1", cls=IPNode)
+    h2 = net.addHost("h2", cls=IPNode)
+    h3 = net.addHost("h3", cls=IPNode)
+    h4 = net.addHost("h4", cls=IPNode)
+    h5 = net.addHost("h5", cls=IPNode)
+    h6 = net.addHost("h6", cls=IPNode)
+    h7 = net.addHost("h7", cls=IPNode)
+    h8 = net.addHost("h8", cls=IPNode)
 
     # NAT for VM
     nat1 = net.addHost("nat1", cls=NAT, ip="192.168.100.1/24", subnet='192.168.0.0/16', inNamespace=False)

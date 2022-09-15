@@ -1,6 +1,6 @@
 from mininet.log import setLogLevel
 
-from ipnet import IPNetwork, SRv6Node, FRR, CLIX
+from ipnet import IPNetwork, FRR, CLIX, IPNode
 
 
 super_spine_conf = """\
@@ -78,15 +78,15 @@ router bgp {as_number}
   exit-address-family
 """
 
-class Leaf(SRv6Node):
+class Leaf(FRR):
     pass
 
 
-class Spine(SRv6Node):
+class Spine(FRR):
     pass
 
 
-class SuperSpine(SRv6Node):
+class SuperSpine(FRR):
     pass
 
 
@@ -123,22 +123,22 @@ def setup() -> IPNetwork:
     
 
     # host
-    h1 = net.addHost("h1", cls=SRv6Node)
-    h2 = net.addHost("h2", cls=SRv6Node)
-    h3 = net.addHost("h3", cls=SRv6Node)
-    h4 = net.addHost("h4", cls=SRv6Node)
-    h5 = net.addHost("h5", cls=SRv6Node)
-    h6 = net.addHost("h6", cls=SRv6Node)
-    h7 = net.addHost("h7", cls=SRv6Node)
-    h8 = net.addHost("h8", cls=SRv6Node)
-    h9 = net.addHost("h9", cls=SRv6Node)
-    h10 = net.addHost("h10", cls=SRv6Node)
-    h11 = net.addHost("h11", cls=SRv6Node)
-    h12 = net.addHost("h12", cls=SRv6Node)
-    h13 = net.addHost("h13", cls=SRv6Node)
-    h14 = net.addHost("h14", cls=SRv6Node)
-    h15 = net.addHost("h15", cls=SRv6Node)
-    h16 = net.addHost("h16", cls=SRv6Node)
+    h1 = net.addHost("h1", cls=IPNode)
+    h2 = net.addHost("h2", cls=IPNode)
+    h3 = net.addHost("h3", cls=IPNode)
+    h4 = net.addHost("h4", cls=IPNode)
+    h5 = net.addHost("h5", cls=IPNode)
+    h6 = net.addHost("h6", cls=IPNode)
+    h7 = net.addHost("h7", cls=IPNode)
+    h8 = net.addHost("h8", cls=IPNode)
+    h9 = net.addHost("h9", cls=IPNode)
+    h10 = net.addHost("h10", cls=IPNode)
+    h11 = net.addHost("h11", cls=IPNode)
+    h12 = net.addHost("h12", cls=IPNode)
+    h13 = net.addHost("h13", cls=IPNode)
+    h14 = net.addHost("h14", cls=IPNode)
+    h15 = net.addHost("h15", cls=IPNode)
+    h16 = net.addHost("h16", cls=IPNode)
     
     # set SRv6 SID
     sid_format = "fc00:bbbb:bbbb:bbbb:{node}:{func}:0:{args}/80"
