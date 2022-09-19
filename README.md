@@ -7,7 +7,7 @@
 2. install FRRouting
 3. install ipnet following command
 ```commandline
-git clone https://github.com/shu1r0/ip_network_experiments.git
+git clone https://github.com/shu1r0/ipnet_mininet.git
 cd ip_network_experiments
 sudo pip install -r requirements.txt
 sudo pip install .
