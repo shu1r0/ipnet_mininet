@@ -28,12 +28,11 @@ interface lo
   
 router ospf
   ospf router-id 10.0.0.1
-  # router-info area 0.0.0.0
   capability opaque
   mpls-te on
   mpls-te router-address 10.0.0.1
   segment-routing on
-  segment-routing global-block 19000 21999
+  segment-routing global-block 16000 23999
   segment-routing node-msd 8
   segment-routing prefix 10.0.0.1/32 index 100
 exit
@@ -54,12 +53,11 @@ interface lo
   
 router ospf
   ospf router-id 10.0.0.2
-  # router-info area 0.0.0.0
   capability opaque
   mpls-te on
   mpls-te router-address 10.0.0.2
   segment-routing on
-  segment-routing global-block 19000 21999
+  segment-routing global-block 16000 23999
   segment-routing node-msd 8
   segment-routing prefix 10.0.0.2/32 index 200
 exit
@@ -80,12 +78,11 @@ interface lo
   
 router ospf
   ospf router-id 10.0.0.3
-  # router-info area 0.0.0.0
   capability opaque
   mpls-te on
   mpls-te router-address 10.0.0.3
   segment-routing on
-  segment-routing global-block 19000 21999
+  segment-routing global-block 16000 23999
   segment-routing node-msd 8
   segment-routing prefix 10.0.0.3/32 index 300
 exit
@@ -106,12 +103,11 @@ interface lo
 
 router ospf
   ospf router-id 10.0.0.4
-  # router-info area 0.0.0.0
   capability opaque
   mpls-te on
   mpls-te router-address 10.0.0.4
   segment-routing on
-  segment-routing global-block 19000 21999
+  segment-routing global-block 16000 23999
   segment-routing node-msd 8
   segment-routing prefix 10.0.0.4/32 index 400
 exit
@@ -132,12 +128,11 @@ interface lo
 
 router ospf
   ospf router-id 10.0.0.5
-  # router-info area 0.0.0.0
   capability opaque
   mpls-te on
   mpls-te router-address 10.0.0.5
   segment-routing on
-  segment-routing global-block 19000 21999
+  segment-routing global-block 16000 23999
   segment-routing node-msd 8
   segment-routing prefix 10.0.0.5/32 index 500
 exit
@@ -161,16 +156,16 @@ interface lo
 
 router ospf
   ospf router-id 10.0.0.6
-  # router-info area 0.0.0.0
   capability opaque
   mpls-te on
   mpls-te router-address 10.0.0.6
   segment-routing on
-  segment-routing global-block 19000 21999
+  segment-routing global-block 16000 23999
   segment-routing node-msd 8
   segment-routing prefix 10.0.0.6/32 index 600
 exit
 """
+
 
 class MPLSNode(FRR):
 
@@ -178,7 +173,6 @@ class MPLSNode(FRR):
         super().config(**params)
         enable_mpls(self)
         disable_rp(self)
-
 
 
 def setup() -> IPNetwork:

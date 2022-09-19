@@ -3,7 +3,6 @@ from mininet.log import setLogLevel
 
 from ipnet import IPNetwork, FRR, CLIX, IPNode
 
-
 spine_conf = """\
 enable
 configure terminal
