@@ -19,7 +19,7 @@ sudo service openvswitch-switch start
 sudo apt install -y frr
 ```
 ([from source for Ubuntu20.04](http://docs.frrouting.org/projects/dev-guide/en/latest/building-frr-for-ubuntu2004.html))
-1. install ipnet
+3. install ipnet
 ```commandline
 git clone https://github.com/shu1r0/ipnet_mininet.git
 cd ipnet_mininet
