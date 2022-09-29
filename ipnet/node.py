@@ -6,14 +6,15 @@ References:
 """
 
 import pkgutil
+import json
 from jinja2 import Template
 from mininet.node import Node
 
-from .node_helpers import disable_forwarding, enable_forwarding, enable_srv6, disable_rp, set_arp_for_router
+from .node_helpers import disable_forwarding, enable_forwarding, enable_srv6, disable_rp, set_arp_for_router, enable_mpls
 
 
 class IPNode(Node):
-    
+
     def config(self, **params):
         self.cmd("ifconfig lo up")
 
@@ -22,7 +23,7 @@ class IPNode(Node):
 
     def set_ipv6_cmd(self, ipv6, intf_name):
         self.cmd("ip -6 addr add {} dev {}".format(ipv6, intf_name))
-    
+
     def add_default_route_cmd(self, intf: str, nexthop: str):
         self.cmd("ip route add default dev {} via {}".format(intf, nexthop))
 
@@ -89,11 +90,15 @@ class FRR(SRv6Router):
         self.daemons_param = {
             "zebra": "yes", "bgpd": "no", "ospfd": "no", "ospf6d": "no", "ripd": "no", "ripngd": "no", "isisd": "no",
             "pimd": "no", "ldpd": "no", "nhrpd": "no", "eigrpd": "no", "babeld": "no", "sharpd": "no", "staticd": "no",
-            "pbrd": "no", "bfdd": "no", "fabricd": "no"
+            "pbrd": "no", "bfdd": "no", "fabricd": "no", "pathd": "no"
         }
         if isinstance(enable_daemons, list):
-            for daemon in enable_daemons:
-                self.daemons_param[daemon] = "yes"
+            if "*" in enable_daemons:
+                for daemon in self.daemons_param.keys():
+                    self.daemons_param[daemon] = "yes"
+            else:
+                for daemon in enable_daemons:
+                    self.daemons_param[daemon] = "yes"
 
     def start_frr_service(self):
         """start FRR"""
@@ -101,7 +106,7 @@ class FRR(SRv6Router):
         self.set_vtysh_conf()
         self.set_frr_conf()
         self.cmd("/usr/lib/frr/frrinit.sh start")
-    
+
     def terminate(self):
         self.cmd("/usr/lib/frr/frrinit.sh stop")
         super().terminate()
@@ -136,29 +141,37 @@ class FRR(SRv6Router):
             template = Template(t.read())
             self.render_conf(file, template, params)
 
-    def render_conf(self, file, template, params=None):
+    def render_conf(self, file, template, params=None) -> str:
         """render conf"""
         if params is None:
             params = {}
         rendered = template.render(**params)
-        self.cmd("""\
-cat << 'EOF' | tee {}
-{}
-EOF""".format(file, rendered))
+        return self.cmd("cat << 'EOF' | tee {} \n".format(file) + rendered + "\n" + "EOF")
 
-    def vtysh_cmd(self, cmd=""):
+    def vtysh_cmd(self, cmd="", json_loads=False) -> str or dict:
         """exec vtysh commands"""
         cmds = cmd.split("\n")
         vtysh_cmd = "vtysh"
         for c in cmds:
             vtysh_cmd += " -c \"{}\"".format(c)
-        return self.cmd(vtysh_cmd)
+        if json_loads:
+            return json.loads(self.cmd(vtysh_cmd))
+        else:
+            return self.cmd(vtysh_cmd)
+
+
+class MPLSRouter(FRR):
+
+    def config(self, **params):
+        super().config(**params)
+        enable_mpls(self)
 
 
 class SimpleBGPRouter(FRR):
     """Simple BGP Router"""
 
-    def __init__(self, name, inNamespace=True, as_number=None, router_id=None, bgp_networks=None, bgp_peers=None, **params):
+    def __init__(self, name, inNamespace=True, as_number=None, router_id=None, bgp_networks=None, bgp_peers=None,
+                 **params):
         super().__init__(name, inNamespace=inNamespace, enable_daemons=["bgpd"], frr_conf=None, **params)
 
         self.as_number = as_number
@@ -182,4 +195,5 @@ class SimpleBGPRouter(FRR):
         if self.frr_conf:
             self.render_conf_file("/etc/frr/frr.conf", self.frr_conf, params)
         else:
-            self.render_conf("/etc/frr/frr.conf", Template(pkgutil.get_data(__name__, "conf/frr_bgp.conf.j2").decode()), params)
+            self.render_conf("/etc/frr/frr.conf", Template(pkgutil.get_data(__name__, "conf/frr_bgp.conf.j2").decode()),
+                             params)

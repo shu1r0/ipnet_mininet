@@ -142,3 +142,11 @@ def add_vxlan_bridge_cmd(node: Node, vxlan_id: int, intf_ip: str, vxlan_dev: str
     
     node.cmd("ip link set dev {} promisc on".format(vxlan_intf), verbose=verbose)
     return bridge
+
+
+def add_vrf_cmd(node: Node, vrf_name: str, table_id: int, enslaved_intf: str, keep_addr_on_down=0, verbose=False):
+    node.cmd("sysctl -w net.ipv6.conf.all.keep_addr_on_down={}".format(keep_addr_on_down), verbose=verbose)
+    node.cmd("ip link add dev {} type vrf table {}".format(vrf_name, table_id), verbose=verbose)
+    node.cmd("ip link set dev {} up".format(vrf_name), verbose=verbose)
+    node.cmd("ip link set dev {} master {}".format(enslaved_intf, vrf_name), verbose=verbose)
+    node.cmd("ip link set dev {} up".format(enslaved_intf), verbose=verbose)
