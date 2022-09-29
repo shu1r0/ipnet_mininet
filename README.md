@@ -8,7 +8,7 @@
 3. install ipnet following command
 ```commandline
 git clone https://github.com/shu1r0/ipnet_mininet.git
-cd ip_network_experiments
+cd ipnet_mininet
 sudo pip install -r requirements.txt
 sudo pip install .
 ```
