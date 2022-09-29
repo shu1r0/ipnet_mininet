@@ -3,9 +3,23 @@
 `ipnet` is mininet extentions for learning OSPF, BGP, SRv6 and more.
 
 ## install
-1. install mininet
-2. install FRRouting
-3. install ipnet following command
+1. [install mininet](http://mininet.org/download/)
+```
+git clone https://github.com/mininet/mininet
+cd mininet
+# git tag 
+git checkout -b mininet-2.3.0 2.3.0  # or whatever version you wish to install
+cd ..
+mininet/util/install.sh -a
+sudo apt -y install openvswitch-switch
+sudo service openvswitch-switch start
+```
+2. [install FRRouting](https://docs.frrouting.org/en/latest/installation.html)
+```
+sudo apt install -y frr
+```
+([from source for Ubuntu20.04](http://docs.frrouting.org/projects/dev-guide/en/latest/building-frr-for-ubuntu2004.html))
+1. install ipnet
 ```commandline
 git clone https://github.com/shu1r0/ipnet_mininet.git
 cd ipnet_mininet
