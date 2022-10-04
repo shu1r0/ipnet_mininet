@@ -4,9 +4,12 @@
 ```comandline
 sudo apt install linux-modules-extra-`uname -r`
 sudo modprobe mpls-router
-sudo modprobe mpls_gso
+sudo modprobe mpls-gso
 sudo modprobe mpls-iptunnel
 ```
+
+## `sr_mpls_vpn_10`
+![sr_mpls_vpn_10](./sr_mpls_vpn_10.drawio.png)
 
 ## `sr_mpls_10.py`
 

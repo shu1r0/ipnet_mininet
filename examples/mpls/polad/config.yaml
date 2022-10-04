@@ -1,0 +1,17 @@
+# 
+# 
+# 
+# 
+# 
+
+
+global:
+  pcep:
+    address: "192.168.255.1"
+    port: 4189
+  grpc:
+    address: "127.0.0.1"
+    port: 50051
+  log: 
+    path: "/var/log/pola/"
+    name: "polad.log"

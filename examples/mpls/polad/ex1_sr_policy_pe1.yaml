@@ -1,0 +1,13 @@
+srPolicy:
+    name: name
+    peerAddr: 192.168.255.2
+    srcAddr: 10.255.0.1
+    dstAddr: 10.255.0.6
+    color: 100
+    segmentlist:
+        - sid: 16200
+          nai: 10.255.0.2
+        - sid: 16500
+          nai: 10.255.0.5
+        - sid: 16600
+          nai: 10.255.0.6

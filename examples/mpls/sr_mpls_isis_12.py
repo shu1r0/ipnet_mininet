@@ -7,7 +7,7 @@ References:
 """
 from mininet.log import setLogLevel
 
-from ipnet import IPNetwork, FRR, IPNode, CLIX, enable_mpls
+from ipnet import IPNetwork, FRR, IPNode, CLIX, MPLSRouter
 
 
 r1_conf = """\
@@ -192,14 +192,14 @@ def setup() -> IPNetwork:
     net = IPNetwork()
 
     # FRRouting Router
-    r1 = net.addFRR("r1", enable_daemons=["isisd"])
-    r2 = net.addFRR("r2", enable_daemons=["isisd"])
-    r3 = net.addFRR("r3", enable_daemons=["isisd"])
-    r4 = net.addFRR("r4", enable_daemons=["isisd"])
-    r5 = net.addFRR("r5", enable_daemons=["isisd"])
-    r6 = net.addFRR("r6", enable_daemons=["isisd"])
-    r7 = net.addFRR("r7", enable_daemons=["isisd"])
-    r8 = net.addFRR("r8", enable_daemons=["isisd"])
+    r1 = net.addFRR("r1", enable_daemons=["isisd"], cls=MPLSRouter)
+    r2 = net.addFRR("r2", enable_daemons=["isisd"], cls=MPLSRouter)
+    r3 = net.addFRR("r3", enable_daemons=["isisd"], cls=MPLSRouter)
+    r4 = net.addFRR("r4", enable_daemons=["isisd"], cls=MPLSRouter)
+    r5 = net.addFRR("r5", enable_daemons=["isisd"], cls=MPLSRouter)
+    r6 = net.addFRR("r6", enable_daemons=["isisd"], cls=MPLSRouter)
+    r7 = net.addFRR("r7", enable_daemons=["isisd"], cls=MPLSRouter)
+    r8 = net.addFRR("r8", enable_daemons=["isisd"], cls=MPLSRouter)
 
     # host
     h1: IPNode = net.addHost("h1", cls=IPNode)
@@ -256,10 +256,6 @@ def setup() -> IPNetwork:
     r1.cmd("ip route add 192.168.4.2/32 encap mpls 16400/16500/16800 via 192.168.12.2")
 
     net.start()
-    
-    # enable MPLS
-    for r in net.get_nodes_by_cls(FRR):
-        enable_mpls(r)
 
     r1.vtysh_cmd(r1_conf)
     r2.vtysh_cmd(r2_conf)
@@ -270,10 +266,10 @@ def setup() -> IPNetwork:
     r7.vtysh_cmd(r7_conf)
     r8.vtysh_cmd(r8_conf)
 
-    # r1.tcpdump("r1_r2")
-    # r4.tcpdump("r4_r3")
-    # r5.tcpdump("r5_r6")
-    # r8.tcpdump("r8_r7")
+    r1.tcpdump("r1_r2")
+    r4.tcpdump("r4_r3")
+    r5.tcpdump("r5_r6")
+    r8.tcpdump("r8_r7")
 
     return net
 
