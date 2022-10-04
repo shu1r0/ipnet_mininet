@@ -266,10 +266,10 @@ def setup() -> IPNetwork:
     r7.vtysh_cmd(r7_conf)
     r8.vtysh_cmd(r8_conf)
 
-    r1.tcpdump("r1_r2")
-    r4.tcpdump("r4_r3")
-    r5.tcpdump("r5_r6")
-    r8.tcpdump("r8_r7")
+    # r1.tcpdump("r1_r2")
+    # r4.tcpdump("r4_r3")
+    # r5.tcpdump("r5_r6")
+    # r8.tcpdump("r8_r7")
 
     return net
 

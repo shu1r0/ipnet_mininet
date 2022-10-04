@@ -358,12 +358,12 @@ def setup() -> IPNetwork:
     print(p3.vtysh_cmd(p3_conf))
     print(p4.vtysh_cmd(p4_conf))
 
-    pe1.tcpdump("pe1_p1")
-    pe1.tcpdump("pe1_p2")
-    pe1.tcpdump("pe1_s255")
-    pe2.tcpdump("pe2_p3")
-    pe2.tcpdump("pe2_p4")
-    pe2.tcpdump("pe2_s255")
+    # pe1.tcpdump("pe1_p1")
+    # pe1.tcpdump("pe1_p2")
+    # pe1.tcpdump("pe1_s255")
+    # pe2.tcpdump("pe2_p3")
+    # pe2.tcpdump("pe2_p4")
+    # pe2.tcpdump("pe2_s255")
 
     return net
 
