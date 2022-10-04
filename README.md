@@ -1,8 +1,8 @@
-# IP Network Experiments (ipnet)
+# Mininet extemsion for learning IP network (ipnet)
 
 `ipnet` is mininet extentions for learning OSPF, BGP, SRv6 and more.
 
-## install
+## Install
 1. [install mininet](http://mininet.org/download/)
 ```
 git clone https://github.com/mininet/mininet
@@ -74,7 +74,7 @@ if __name__ == "__main__":
 
 ![simple_2](./examples/simple/simple_2.drawio.png)
 
-## start vtysh
+## Start vtysh
 
 example of `vtysh`
 
