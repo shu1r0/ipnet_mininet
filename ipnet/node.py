@@ -27,6 +27,9 @@ class IPNode(Node):
     def add_default_route_cmd(self, intf: str, nexthop: str):
         self.cmd("ip route add default dev {} via {}".format(intf, nexthop))
 
+    def add_v6_default_route_cmd(self, intf: str, nexthop: str):
+        self.cmd("ip -6 route add default dev {} via {}".format(intf, nexthop))
+
     def tcpdump(self, intf):
         cmd = "tcpdump -i " + intf + " -w " + intf + ".pcap &"
         return self.cmd(cmd)

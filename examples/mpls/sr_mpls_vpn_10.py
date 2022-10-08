@@ -284,7 +284,7 @@ def setup() -> IPNetwork:
     net = IPNetwork()
 
     # FRRouting Router
-    pe1 = net.addFRR("pe1", cls=ProviderEdgeRouter, enable_daemons=["bgpd", "isisd", "pathd", "*"])
+    pe1 = net.addFRR("pe1", cls=ProviderEdgeRouter, enable_daemons=["bgpd", "isisd", "pathd"])
     pe2 = net.addFRR("pe2", cls=ProviderEdgeRouter, enable_daemons=["bgpd", "isisd", "pathd"])
     p1 = net.addFRR("p1", cls=ProviderRouter, enable_daemons=["isisd", "pathd"])
     p2 = net.addFRR("p2", cls=ProviderRouter, enable_daemons=["isisd", "pathd"])
