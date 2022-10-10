@@ -2,7 +2,7 @@
 
 ## MPLS Config
 ```comandline
-sudo apt install linux-modules-extra-`uname -r`
+sudo apt install -y linux-modules-extra-`uname -r`
 sudo modprobe mpls-router
 sudo modprobe mpls-gso
 sudo modprobe mpls-iptunnel
