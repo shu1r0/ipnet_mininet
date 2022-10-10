@@ -1,0 +1,27 @@
+# References:
+#   * https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-python#using-the-python-starter-workflow
+
+name: Run pytest
+on: [push]
+
+jobs:
+  pytest:
+    runs-on: ubuntu-22.04
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Set up Python 3.7
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.7
+      - name: install deps
+        run: |
+          sudo ubuntu-dev/scritps/install_pkg.sh
+          sudo ubuntu-dev/scritps/install_networkpkg.sh
+          sudo pip install pytest
+          sudo pip install -r requirements.txt
+          sudo pip install .
+      - name: run test
+        run: |
+          sudo python3 -m unittest discover examples
