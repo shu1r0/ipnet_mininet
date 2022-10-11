@@ -87,17 +87,21 @@ class IPNetwork(Mininet):
                 n.cmdPrint(cmd)
     
     @classmethod
-    def ping_to_ip(cls, node: Node, dst_ip: str, times=1) -> Tuple[int, int]:
+    def ping_to_ip(cls, node: Node, dst_ip: str, times=1, timeout=None) -> Tuple[int, int]:
         """simple ping"""
-        result = node.cmd('LANG=C ping -c {} {}'.format(times, dst_ip))
+        cmd = 'LANG=C ping -c {} {}'.format(times, dst_ip)
+        cmd += " -W {}".format(timeout) if timeout is not None else ""
+        result = node.cmd(cmd)
         sent, received = cls._parsePing(result)
         output("ping %s -> %s (sent: %s, received: %s, dropped: %s) \n" % (str(node), dst_ip, sent, received, sent - received))
         return sent, received
 
     @classmethod
-    def ping_to_ipv6(cls, node: Node, dst_ipv6: str, times=1) -> Tuple[int, int]:
+    def ping_to_ipv6(cls, node: Node, dst_ipv6: str, times=1, timeout=None) -> Tuple[int, int]:
         """simple ping -6"""
-        result = node.cmd('LANG=C ping -6 -c {} {}'.format(times, dst_ipv6))
+        cmd = 'LANG=C ping -6 -c {} {}'.format(times, dst_ip)
+        cmd += " -W {}".format(timeout) if timeout is not None else ""
+        result = node.cmd(cmd)
         sent, received = cls._parsePing(result)
         output("ping %s -> %s (sent: %s, received: %s, dropped: %s) \n" % (str(node), dst_ipv6, sent, received, sent - received))
         return sent, received
