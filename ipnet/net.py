@@ -99,7 +99,7 @@ class IPNetwork(Mininet):
     @classmethod
     def ping_to_ipv6(cls, node: Node, dst_ipv6: str, times=1, timeout=None) -> Tuple[int, int]:
         """simple ping -6"""
-        cmd = 'LANG=C ping -6 -c {} {}'.format(times, dst_ip)
+        cmd = 'LANG=C ping -6 -c {} {}'.format(times, dst_ipv6)
         cmd += " -W {}".format(timeout) if timeout is not None else ""
         result = node.cmd(cmd)
         sent, received = cls._parsePing(result)
