@@ -1,4 +1,4 @@
-# Mininet extemsion for learning IP network (ipnet)
+# Mininet extemsion for learning Simple IP network (ipnet)
 
 `ipnet` is mininet extentions for learning OSPF, BGP, SRv6 and more.
 

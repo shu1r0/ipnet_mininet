@@ -141,16 +141,19 @@ def setup() -> IPNetwork:
     h16 = net.addHost("h16", cls=IPNode)
     
     # set SRv6 SID
-    sid_format = "fc00:bbbb:bbbb:bbbb:{node}:{func}:0:{args}/80"
+    sid_format = "fcbb:{node}::{func}:0:{args}/80"
     format_dict = {"node": -1, "func": 1, "args": 0}
+    ## fcbb:a<n>::
     for i, n in enumerate(net.get_nodes_by_cls(SuperSpine), start=1):
         format_dict["node"] = "a" + str(i)
         n.set_ipv6_cmd(sid_format.format(**format_dict), "lo")
+    ## fcbb:b<n>::
     for i, n in enumerate(net.get_nodes_by_cls(Spine), start=1):
-        format_dict["node"] = "a" + str(i)
+        format_dict["node"] = "b" + str(i)
         n.set_ipv6_cmd(sid_format.format(**format_dict), "lo")
+    ## fcbb:c<n>::
     for i, n in enumerate(net.get_nodes_by_cls(Leaf), start=1):
-        format_dict["node"] = "a" + str(i)
+        format_dict["node"] = "c" + str(i)
         n.set_ipv6_cmd(sid_format.format(**format_dict), "lo")
     
     def set_link(n1, n2):
