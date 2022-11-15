@@ -141,7 +141,7 @@ def setup() -> IPNetwork:
     h16 = net.addHost("h16", cls=IPNode)
     
     # set SRv6 SID
-    sid_format = "fcbb:{node}::{func}:0:{args}/80"
+    sid_format = "fdbb:{node}::{func}:0:{args}/80"
     format_dict = {"node": -1, "func": 1, "args": 0}
     ## fcbb:a<n>::
     for i, n in enumerate(net.get_nodes_by_cls(SuperSpine), start=1):
@@ -176,8 +176,8 @@ def setup() -> IPNetwork:
     
     def set_link_hosts(r, h1, h2, block):
         def set_link_host(r, n, block):
-            ipv6_1 = "fc00:{}::1/64".format(block)
-            ipv6_2 = "fc00:{}::2/64".format(block)
+            ipv6_1 = "fd00:{}::1/64".format(block)
+            ipv6_2 = "fd00:{}::2/64".format(block)
             ipv4_1 = "192.168.{}.1/24".format(block)
             ipv4_2 = "192.168.{}.2/24".format(block)
             intf1 = str(r)+"_"+str(n)
@@ -190,7 +190,7 @@ def setup() -> IPNetwork:
             
             n.cmd("ip route add default dev {} via {}".format(intf2, ipv4_1.split("/")[0]))
             n.cmd("ip -6 route add default dev {} via {}".format(intf2, ipv6_1.split("/")[0]))
-            
+        
         set_link_host(r, h1, block)
         set_link_host(r, h2, int(block)+1)
 
