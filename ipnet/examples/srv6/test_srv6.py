@@ -10,7 +10,7 @@ class Srv6_VPN_10Test(TestCase):
         self.net = srv6_vpn_10.setup()
 
     def test_reachability(self):
-        sleep(50)
+        sleep(60)
         _, r = self.net.ping_to_ipv6(self.net.get("h1"), "fd00:2::2")
         self.assertEqual(True, r == 0)
         _, r = self.net.ping_to_ipv6(self.net.get("h1"), "fd00:3::2")

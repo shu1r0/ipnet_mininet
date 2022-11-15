@@ -42,7 +42,7 @@ class SR_MPLS_VPN_10Test(TestCase):
         self.net = sr_mpls_vpn_10.setup()
 
     def test_reachability(self):
-        sleep(50)
+        sleep(60)
         _, r = self.net.ping_to_ip(self.net.get("h1"), "192.168.2.2")
         self.assertEqual(True, r == 0)
         _, r = self.net.ping_to_ip(self.net.get("h1"), "192.168.3.2")
