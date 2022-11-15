@@ -1,7 +1,7 @@
 from time import sleep
 from unittest import main, TestCase
 
-from . import vxlan_uni_3, vxlan_multi_7
+from ipnet.examples.vxlan import vxlan_uni_3, vxlan_multi_7
 
 
 class VXLAN_Uni_3Test(TestCase):
@@ -10,6 +10,7 @@ class VXLAN_Uni_3Test(TestCase):
         self.net = vxlan_uni_3.setup()
     
     def test_reachability(self):
+        sleep(1)
         _, r = self.net.ping_to_ip(self.net.get("h1"), "172.16.10.2")
         self.assertEqual(True, r > 0)
 
@@ -23,6 +24,7 @@ class VXLAN_MULTI_7Test(TestCase):
         self.net = vxlan_multi_7.setup()
 
     def test_reachability(self):
+        sleep(1)
         _, r = self.net.ping_to_ip(self.net.get("h1"), "10.200.1.2")
         self.assertEqual(True, r == 0)
         _, r = self.net.ping_to_ip(self.net.get("h1"), "10.100.2.2")

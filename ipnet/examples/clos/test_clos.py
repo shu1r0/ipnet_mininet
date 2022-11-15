@@ -1,7 +1,7 @@
 from time import sleep
 from unittest import main, TestCase
 
-from . import clos2_30, clos3_40
+from ipnet.examples.clos import clos2_30, clos3_40
 
 
 class Clos3_40Test(TestCase):
@@ -10,7 +10,7 @@ class Clos3_40Test(TestCase):
         self.net = clos3_40.setup()
     
     def test_reachability(self):
-        sleep(5)
+        sleep(30)
         for h_i in range(1, 17):
             h = "h{}".format(h_i)
             for h_j in range(h_i, 17):
@@ -27,7 +27,7 @@ class Clos2_30Test(TestCase):
         self.net = clos2_30.setup()
 
     def test_reachability(self):
-        sleep(10)
+        sleep(30)
 
         for h_i in range(1, 9):
             h = "h{}".format(h_i)

@@ -12,6 +12,7 @@ sudo apt -y install libssl-dev libffi-dev libxml2-dev libxslt1-dev zlib1g-dev
 sudo apt -y install git
 sudo apt -y install curl
 sudo apt -y install wireshark-dev
+
 sudo apt -y install linux-modules-extra-`uname -r`
 
 sudo pip3 install --upgrade pip
