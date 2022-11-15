@@ -15,9 +15,12 @@ class IPNetwork(Mininet):
     def addRouter(self, name, cls=RouterBase, **params) -> RouterBase:
         return self.addHost(name=name, cls=cls, **params)
 
+    def addSRv6Router(self, name, cls=SRv6Router, **params) -> SRv6Router:
+        return self.addRouter(name, cls=cls, **params)
+
     def addFRR(self, name, cls=FRR, **params) -> FRR:
         """add FRR"""
-        r = self.addHost(name=name, cls=cls, **params)
+        r = self.addRouter(name=name, cls=cls, **params)
         self.frr_routers.append(r)
         return r
 
@@ -25,9 +28,6 @@ class IPNetwork(Mininet):
         r = self.addFRR(name=name, cls=SimpleBGPRouter, as_number=as_number, router_id=router_id, bgp_networks=bgp_networks,
                         bgp_peers=bgp_peers, **params)
         return r
-
-    def addSRv6Router(self, name, cls=SRv6Router, **params) -> SRv6Router:
-        return self.addFRR(name, cls=cls, **params)
 
     def start(self):
         """start mininet and FRR"""
