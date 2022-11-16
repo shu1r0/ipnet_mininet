@@ -16,6 +16,9 @@ EOS
 # ------------------------------------------------------------
 $install_lubuntu = <<SCRIPT
 sudo apt install -y --no-install-recommends lubuntu-desktop
+
+sed -i "/^[^#]*PasswordAuthentication[[:space:]]no/c\PasswordAuthentication yes" /etc/ssh/sshd_config
+systemctl restart sshd
 SCRIPT
 
 # ------------------------------------------------------------

@@ -19,16 +19,16 @@ sudo pip3 install --upgrade pip
 
 sudo apt install -y golang
 
-# sudo timedatectl set-timezone Asia/Tokyo
-# sudo cat << 'EOF' | sudo tee /etc/default/keyboard
-# # KEYBOARD CONFIGURATION FILE
+sudo timedatectl set-timezone Asia/Tokyo
+sudo cat << 'EOF' | sudo tee /etc/default/keyboard
+# KEYBOARD CONFIGURATION FILE
 
-# # Consult the keyboard(5) manual page.
+# Consult the keyboard(5) manual page.
 
-# XKBMODEL="pc105"
-# XKBLAYOUT="jp"
-# XKBVARIANT=""
-# XKBOPTIONS=""
+XKBMODEL="pc105"
+XKBLAYOUT="jp"
+XKBVARIANT=""
+XKBOPTIONS=""
 
-# BACKSPACE="guess"
-# EOF
+BACKSPACE="guess"
+EOF

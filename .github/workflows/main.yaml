@@ -19,8 +19,21 @@ jobs:
         run: |
           chmod +x ./ubuntu-dev/scripts/install_pkg.sh
           sudo ./ubuntu-dev/scripts/install_pkg.sh
-          chmod +x ./ubuntu-dev/scripts/install_networkpkg.sh
-          sudo ./ubuntu-dev/scripts/install_networkpkg.sh
+          # chmod +x ./ubuntu-dev/scripts/install_networkpkg.sh
+          # sudo ./ubuntu-dev/scripts/install_networkpkg.sh
+
+          git clone https://github.com/mininet/mininet
+          cd mininet
+          # git tag  # list available versions
+          git checkout -b mininet-2.3.0 2.3.0  # or whatever version you wish to install
+          cd ..
+          # mininet/util/install.sh -n3fw
+          mininet/util/install.sh -a
+          rm -rf mininet/
+          sudo apt -y install openvswitch-switch
+          sudo service openvswitch-switch start
+
+          sudo apt install -y frr
           
           sudo modprobe mpls-router
           sudo modprobe mpls-gso
