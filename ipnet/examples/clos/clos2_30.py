@@ -185,7 +185,7 @@ def setup() -> IPNetwork:
     nat2 = net.addHost("nat2", cls=NAT, ip="192.168.200.1/24", subnet='192.168.0.0/16', inNamespace=False)
     
     # set SRv6 SID
-    sid_format = "fc00:bbbb:bbbb:bbbb:{node}:{func}:0:{args}/80"
+    sid_format = "fdbb:{node}::{func}:0:{args}/80"
     format_dict = {"node": -1, "func": 1, "args": 0}
     for i, n in enumerate(net.get_nodes_by_cls(Spine), start=1):
         format_dict["node"] = "a" + str(i)
@@ -216,8 +216,8 @@ def setup() -> IPNetwork:
     
     def set_link_hosts(r, h1, block):
         def set_link_host(r, n, block):
-            ipv6_1 = "fc00:{}::1/64".format(block)
-            ipv6_2 = "fc00:{}::2/64".format(block)
+            ipv6_1 = "fd00:{}::1/64".format(block)
+            ipv6_2 = "fd00:{}::2/64".format(block)
             ipv4_1 = "192.168.{}.1/24".format(block)
             ipv4_2 = "192.168.{}.2/24".format(block)
             intf1 = str(r)+"_"+str(n)

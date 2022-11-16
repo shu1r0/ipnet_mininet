@@ -21,6 +21,11 @@ jobs:
           sudo ./ubuntu-dev/scripts/install_pkg.sh
           chmod +x ./ubuntu-dev/scripts/install_networkpkg.sh
           sudo ./ubuntu-dev/scripts/install_networkpkg.sh
+          
+          sudo modprobe mpls-router
+          sudo modprobe mpls-gso
+          sudo modprobe mpls-iptunnel
+
           sudo pip install pytest
           sudo pip install -r requirements.txt
           sudo pip install .
