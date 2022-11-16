@@ -30,7 +30,7 @@ class Simple_Srv6_6(TestCase):
         self.net = simple_srv6_6.setup()
 
     def test_reachability(self):
-        sleep(1)
+        sleep(5)
         _, r = self.net.ping_to_ipv6(self.net.get("h1"), "fd00:2::1")
         self.assertEqual(True, r > 0)
 

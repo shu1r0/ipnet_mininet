@@ -351,12 +351,12 @@ def setup() -> IPNetwork:
 
     net.start()
 
-    print(pe1.vtysh_cmd(pe1_conf))
-    print(pe2.vtysh_cmd(pe2_conf))
-    print(p1.vtysh_cmd(p1_conf))
-    print(p2.vtysh_cmd(p2_conf))
-    print(p3.vtysh_cmd(p3_conf))
-    print(p4.vtysh_cmd(p4_conf))
+    pe1.vtysh_cmd(pe1_conf)
+    pe2.vtysh_cmd(pe2_conf)
+    p1.vtysh_cmd(p1_conf)
+    p2.vtysh_cmd(p2_conf)
+    p3.vtysh_cmd(p3_conf)
+    p4.vtysh_cmd(p4_conf)
 
     # pe1.tcpdump("pe1_p1")
     # pe1.tcpdump("pe1_p2")
