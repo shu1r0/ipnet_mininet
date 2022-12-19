@@ -72,7 +72,7 @@ if __name__ == "__main__":
     run()
 ```
 
-![simple_2](./examples/simple/simple_2.drawio.png)
+![simple_2](./ipnet/examples/simple/simple_2.drawio.png)
 
 ## Start vtysh
 

@@ -39,7 +39,13 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     # install package
     config.vm.provision 'shell', path: "scripts/install_pkg.sh"
     config.vm.provision 'shell', path: "scripts/install_networkpkg.sh"
-    config.vm.provision 'shell', inline: $install_lubuntu
+    config.vm.provision 'shell', inline: <<-SCRIPT
+        sudo apt install -y --no-install-recommends lubuntu-desktop
+    SCRIPT
+    config.vm.provision 'shell', inline: <<-SCRIPT
+        sed -i "/^[^#]*PasswordAuthentication[[:space:]]no/c\PasswordAuthentication yes" /etc/ssh/sshd_config
+        systemctl restart sshd
+    SCRIPT
 
     # config virtual box
     config.vm.provider "virtualbox" do |vb|
