@@ -1,6 +1,6 @@
 # Mininet extemsion for learning Simple IP network (ipnet)
 
-`ipnet` is mininet extentions for learning OSPF, BGP, SRv6 and more.
+`ipnet` is mininet extensions for learning OSPF, BGP, SRv6 and more.
 
 ## Install
 1. [install mininet](http://mininet.org/download/)
@@ -18,7 +18,7 @@ sudo service openvswitch-switch start
 ```
 sudo apt install -y frr
 ```
-  ([from source for Ubuntu20.04](http://docs.frrouting.org/projects/dev-guide/en/latest/building-frr-for-ubuntu2004.html))
+([from source for Ubuntu20.04](http://docs.frrouting.org/projects/dev-guide/en/latest/building-frr-for-ubuntu2004.html))
 
 
 3. install ipnet

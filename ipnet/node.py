@@ -85,6 +85,7 @@ class FRR(SRv6Router):
         self.daemons = daemons
         self.vtysh_conf = vtysh_conf
         self.frr_conf = frr_conf
+        self._is_frr_started = False
 
         # frr conf content
         self.frr_conf_content = frr_conf_content
@@ -103,15 +104,23 @@ class FRR(SRv6Router):
                 for daemon in enable_daemons:
                     self.daemons_param[daemon] = "yes"
 
+    @property
+    def is_frr_started(self):
+        return self._is_frr_started
+
     def start_frr_service(self):
         """start FRR"""
-        self.set_daemons()
-        self.set_vtysh_conf()
-        self.set_frr_conf()
-        self.cmd("/usr/lib/frr/frrinit.sh start")
+        if not self.is_frr_started:
+            self.set_daemons()
+            self.set_vtysh_conf()
+            self.set_frr_conf()
+            self.cmd("/usr/lib/frr/frrinit.sh start")
+            self._is_frr_started = True
 
     def terminate(self):
-        self.cmd("/usr/lib/frr/frrinit.sh stop")
+        if self.is_frr_started:
+            self.cmd("/usr/lib/frr/frrinit.sh stop")
+            self._is_frr_started = False
         super().terminate()
 
     def set_daemons(self):

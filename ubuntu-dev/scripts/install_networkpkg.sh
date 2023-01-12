@@ -81,3 +81,8 @@ sudo apt install -y frr
 # sudo make install
 # cd ..
 # rm -rf frr/
+
+
+sudo modprobe mpls-router
+sudo modprobe mpls-gso
+sudo modprobe mpls-iptunnel

@@ -1,5 +1,5 @@
 sudo apt -y update
-# sudo apt -y upgrade
+sudo apt -y upgrade
 
 sudo apt -y install build-essential
 sudo apt -y install sshpass
@@ -19,6 +19,7 @@ sudo pip3 install --upgrade pip
 
 sudo apt install -y golang
 
+# For Japanese
 sudo timedatectl set-timezone Asia/Tokyo
 sudo cat << 'EOF' | sudo tee /etc/default/keyboard
 # KEYBOARD CONFIGURATION FILE
