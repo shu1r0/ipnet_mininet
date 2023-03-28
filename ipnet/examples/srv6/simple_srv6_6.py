@@ -65,5 +65,8 @@ def setup() -> IPNetwork:
 
 if __name__ == "__main__":
     net = setup()
+    # add route
+    net.get("r1").cmd("ip -6 route add fd00:2::1/128 encap seg6 mode inline segs fd00:a::2,fd00:d::2 dev r1_r2")
+    net.get("r4").cmd("ip -6 route add fd00:1::1/128 encap seg6 mode inline segs fd00:e::1,fd00:b::1 dev r4_r3")
     CLIX(net)
     net.stop()
