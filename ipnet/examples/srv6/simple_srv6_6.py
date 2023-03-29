@@ -56,10 +56,6 @@ def setup() -> IPNetwork:
     net.get("r3").set_ipv6_cmd("fd00:e::1/64", "r3_r4")
     net.get("r4").set_ipv6_cmd("fd00:e::2/64", "r4_r3")
 
-    # add route
-    net.get("r1").cmd("ip -6 route add fd00:2::1/128 encap seg6 mode inline segs fd00:a::2,fd00:d::2 dev r1_r2")
-    net.get("r4").cmd("ip -6 route add fd00:1::1/128 encap seg6 mode inline segs fd00:e::1,fd00:b::1 dev r4_r3")
-
     return net
 
 
