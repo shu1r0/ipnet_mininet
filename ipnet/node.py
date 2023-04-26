@@ -7,8 +7,10 @@ References:
 
 import pkgutil
 import json
+from time import sleep
+
 from jinja2 import Template
-from mininet.node import Node
+from mininet.node import Node, Switch
 
 from .node_helpers import disable_forwarding, enable_forwarding, enable_srv6, disable_rp, set_arp_for_router, enable_mpls
 
@@ -209,3 +211,32 @@ class SimpleBGPRouter(FRR):
         else:
             self.render_conf("/etc/frr/frr.conf", Template(pkgutil.get_data(__name__, "conf/frr_bgp.conf.j2").decode()),
                              params)
+
+
+class VPP(RouterBase):
+
+    vpp_sock_dir = "/run/vpp/"
+
+    def __init__(self, name, sock=None, start_conf=None, start_conf_file=None, **kwargs):
+        super().__init__(name, **kwargs)
+        self.sock_name = sock if sock else "cli-ipnet-vpp-{}.sock".format(self.name)
+        self.sock_path = self.vpp_sock_dir + self.sock_name
+        self.api_pre = "ipnet-vpp-{}".format(self.name)
+        _vpp_start_args_default = "unix {cli-listen %s} api-segment { prefix %s }" % (self.sock_path, self.api_pre)
+        self.vpp_start_args = start_conf if start_conf else _vpp_start_args_default
+        self._verbose = False
+
+    def config(self, **params):
+        super().config(**params)
+        self.cmd("vpp", self.vpp_start_args, verbose=self._verbose)
+        sleep(0.5)  # wait
+        for i in self.intfList():
+            self.vppctl("create", "host-interface", "name", str(i), verbose=self._verbose)
+            self.vppctl("set", "interface", "state", "host-"+str(i), "up", verbose=self._verbose)
+
+    def terminate(self):
+        self.cmd("kill $(ps aux | grep '[ ]%s' | awk '{print $2}')" % self.vpp_start_args)
+        super().terminate()
+
+    def vppctl(self, *args, verbose=True):
+        return self.cmd("vppctl", "-s", self.sock_path, *args, verbose=verbose)

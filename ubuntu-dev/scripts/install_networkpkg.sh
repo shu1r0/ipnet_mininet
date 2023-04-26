@@ -1,3 +1,5 @@
+#!/usr/bin/env bash
+
 # ------------------------------------------------------------
 # install mininet
 # ------------------------------------------------------------
@@ -83,6 +85,19 @@ sudo apt install -y frr
 # rm -rf frr/
 
 
+# ------------------------------------------------------------
+# MPLS Modules
+# ------------------------------------------------------------
 sudo modprobe mpls-router
 sudo modprobe mpls-gso
 sudo modprobe mpls-iptunnel
+
+
+# ------------------------------------------------------------
+# install VPP
+# ------------------------------------------------------------
+curl -s https://packagecloud.io/install/repositories/fdio/release/script.deb.sh | sudo bash
+sudo apt update -y
+sudo apt install -y vpp vpp-plugin-core 
+sudo apt install -y vpp-plugin-dpdk
+sudo apt install -y python3-vpp-api vpp-dbg vpp-dev
