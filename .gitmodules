@@ -1,0 +1,3 @@
+[submodule "ipnet/examples/bgp/gobgp/proto/gobgp"]
+	path = ipnet/examples/bgp/gobgp/proto/gobgp
+	url = https://github.com/osrg/gobgp.git

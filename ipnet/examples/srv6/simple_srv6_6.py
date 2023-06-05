@@ -9,7 +9,7 @@ def setup() -> IPNetwork:
 
     for i in range(1, 5):
         net.addSRv6Router("r{}".format(i), inNamespace=True)
-        
+
     h1 = net.addSRv6Router('h1')
     h2 = net.addSRv6Router('h2')
 
