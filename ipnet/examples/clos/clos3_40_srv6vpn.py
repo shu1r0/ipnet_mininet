@@ -313,7 +313,7 @@ def setup() -> IPNetwork:
     h16 = net.addHost("h16", cls=IPNode)
     
     # set SRv6 SID
-    sid_format = "fdbb:{node}::{func}:0:{args}/64"
+    sid_format = "fdbb:{node}::{func}:0:{args}/80"
     format_dict = {"node": -1, "func": 1, "args": 0}
     ## fcbb:a<n>::
     for i, n in enumerate(net.get_nodes_by_cls(SuperSpine), start=1):
