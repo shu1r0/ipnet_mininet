@@ -32,9 +32,9 @@ class IPNode(Node):
     def add_v6_default_route_cmd(self, intf: str, nexthop: str):
         self.cmd("ip -6 route add default dev {} via {}".format(intf, nexthop))
 
-    def tcpdump(self, intf):
+    def tcpdump(self, intf, verbose=False):
         cmd = "tcpdump -i " + intf + " -w " + intf + ".pcap &"
-        return self.cmd(cmd)
+        return self.cmd(cmd, verbose=verbose)
 
 
 class RouterBase(IPNode):
@@ -162,16 +162,16 @@ class FRR(SRv6Router):
         rendered = template.render(**params)
         return self.cmd("cat << 'EOF' | tee {} \n".format(file) + rendered + "\n" + "EOF")
 
-    def vtysh_cmd(self, cmd="", json_loads=False) -> str or dict:
+    def vtysh_cmd(self, cmd="", json_loads=False, verbose=True) -> str or dict:
         """exec vtysh commands"""
         cmds = cmd.split("\n")
         vtysh_cmd = "vtysh"
         for c in cmds:
             vtysh_cmd += " -c \"{}\"".format(c)
         if json_loads:
-            return json.loads(self.cmd(vtysh_cmd))
+            return json.loads(self.cmd(vtysh_cmd, verbose=verbose))
         else:
-            return self.cmd(vtysh_cmd)
+            return self.cmd(vtysh_cmd, verbose=verbose)
 
 
 class MPLSRouter(FRR):

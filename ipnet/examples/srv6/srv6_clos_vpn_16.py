@@ -8,16 +8,16 @@ enable
 configure terminal
 
 interface {s_name}_l1
-  ipv6 router isis 1
+ 
 interface {s_name}_l2
-  ipv6 router isis 1
+ 
 interface {s_name}_l3
-  ipv6 router isis 1
+ 
 interface {s_name}_l4
-  ipv6 router isis 1
+ 
 interface lo
   ipv6 address {srv6_locator_pre}
-  ipv6 router isis 1
+ 
 
 router isis 1
   net 49.0000.0000.0000.000{id}.00
@@ -74,16 +74,16 @@ enable
 configure terminal
 
 interface {l_name}_s1
-  ipv6 router isis 1
+ 
 interface {l_name}_s2
-  ipv6 router isis 1
+ 
 interface {l_name}_s3
-  ipv6 router isis 1
+ 
 interface {l_name}_s4
-  ipv6 router isis 1
+ 
 interface lo
   ipv6 address {srv6_locator_pre}
-  ipv6 router isis 1
+ 
 
 router isis 1
   net 49.0000.0000.0000.00{id}.00
