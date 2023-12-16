@@ -35,8 +35,6 @@ router bgp {as_number}
   neighbor {ss_name}_s4 interface peer-group CLOS
   neighbor {ss_name}_s5 interface peer-group CLOS
   neighbor {ss_name}_s6 interface peer-group CLOS
-  neighbor {ss_name}_s7 interface peer-group CLOS
-  neighbor {ss_name}_s8 interface peer-group CLOS
 
   segment-routing srv6
     locator default
@@ -115,8 +113,6 @@ router bgp {as_number}
   neighbor {s_name}_ss4 interface peer-group CLOS
   neighbor {s_name}_ss5 interface peer-group CLOS
   neighbor {s_name}_ss6 interface peer-group CLOS
-  neighbor {s_name}_ss7 interface peer-group CLOS
-  neighbor {s_name}_ss8 interface peer-group CLOS
   neighbor {s_name}_{l_name1} interface peer-group CLOS
   neighbor {s_name}_{l_name2} interface peer-group CLOS
 
@@ -270,8 +266,6 @@ def setup() -> IPNetwork:
     ss4 = net.addFRR("ss4", cls=SuperSpine, enable_daemons=["bgpd", "pathd"])
     ss5 = net.addFRR("ss5", cls=SuperSpine, enable_daemons=["bgpd", "pathd"])
     ss6 = net.addFRR("ss6", cls=SuperSpine, enable_daemons=["bgpd", "pathd"])
-    ss7 = net.addFRR("ss7", cls=SuperSpine, enable_daemons=["bgpd", "pathd"])
-    ss8 = net.addFRR("ss8", cls=SuperSpine, enable_daemons=["bgpd", "pathd"])
     
     # Spine
     s1 = net.addFRR("s1", cls=Spine, enable_daemons=["bgpd", "pathd"])
@@ -280,8 +274,6 @@ def setup() -> IPNetwork:
     s4 = net.addFRR("s4", cls=Spine, enable_daemons=["bgpd", "pathd"])
     s5 = net.addFRR("s5", cls=Spine, enable_daemons=["bgpd", "pathd"])
     s6 = net.addFRR("s6", cls=Spine, enable_daemons=["bgpd", "pathd"])
-    s7 = net.addFRR("s7", cls=Spine, enable_daemons=["bgpd", "pathd"])
-    s8 = net.addFRR("s8", cls=Spine, enable_daemons=["bgpd", "pathd"])
     
     # Leaf
     l1 = net.addFRR("l1", cls=Leaf, enable_daemons=["bgpd", "pathd"])
@@ -290,8 +282,6 @@ def setup() -> IPNetwork:
     l4 = net.addFRR("l4", cls=Leaf, enable_daemons=["bgpd", "pathd"])
     l5 = net.addFRR("l5", cls=Leaf, enable_daemons=["bgpd", "pathd"])
     l6 = net.addFRR("l6", cls=Leaf, enable_daemons=["bgpd", "pathd"])
-    l7 = net.addFRR("l7", cls=Leaf, enable_daemons=["bgpd", "pathd"])
-    l8 = net.addFRR("l8", cls=Leaf, enable_daemons=["bgpd", "pathd"])
     
 
     # Host
@@ -301,16 +291,6 @@ def setup() -> IPNetwork:
     h4 = net.addHost("h4", cls=IPNode)
     h5 = net.addHost("h5", cls=IPNode)
     h6 = net.addHost("h6", cls=IPNode)
-    h7 = net.addHost("h7", cls=IPNode)
-    h8 = net.addHost("h8", cls=IPNode)
-    h9 = net.addHost("h9", cls=IPNode)
-    h10 = net.addHost("h10", cls=IPNode)
-    h11 = net.addHost("h11", cls=IPNode)
-    h12 = net.addHost("h12", cls=IPNode)
-    h13 = net.addHost("h13", cls=IPNode)
-    h14 = net.addHost("h14", cls=IPNode)
-    h15 = net.addHost("h15", cls=IPNode)
-    h16 = net.addHost("h16", cls=IPNode)
     
     # set SRv6 SID
     sid_format = "fdbb:{node}::{func}:0:0:{args}/64"
@@ -346,7 +326,7 @@ def setup() -> IPNetwork:
             for l in [l1, l2]:
                 set_link(s, l)
     
-    def set_link_hosts(r, h1, h2, block):
+    def set_link_hosts(r, h1, block):
         def set_link_host(r, n, block):
             ipv6_1 = "fd00:{}::1/64".format(block)
             ipv6_2 = "fd00:{}::2/64".format(block)
@@ -364,48 +344,26 @@ def setup() -> IPNetwork:
             n.cmd("ip -6 route add default dev {} via {}".format(intf2, ipv6_1.split("/")[0]))
         
         set_link_host(r, h1, block)
-        set_link_host(r, h2, int(block)+1)
 
     # setup
     set_link_super_spine()
     set_link_pod(s1, s2, l1, l2)
     set_link_pod(s3, s4, l3, l4)
     set_link_pod(s5, s6, l5, l6)
-    set_link_pod(s7, s8, l7, l8)
-    set_link_hosts(l1, h1, h2, 1)
-    set_link_hosts(l2, h3, h4, 3)
-    set_link_hosts(l3, h5, h6, 5)
-    set_link_hosts(l4, h7, h8, 7)
-    set_link_hosts(l5, h9, h10, 9)
-    set_link_hosts(l6, h11, h12, 11)
-    set_link_hosts(l7, h13, h14, 13)
-    set_link_hosts(l8, h15, h16, 15)
-    
+    set_link_hosts(l1, h1, 1)
+    set_link_hosts(l2, h2, 2)
+    set_link_hosts(l3, h3, 3)
+    set_link_hosts(l4, h4, 4)
+    set_link_hosts(l5, h5, 5)
+    set_link_hosts(l6, h6, 6)
+
     # VRF config
     add_vrf_cmd(l1, vrf_name="group1", table_id=10, enslaved_intf="l1_h1", keep_addr_on_down=1, verbose=True)
-    add_vrf_cmd(l1, vrf_name="group1", table_id=10, enslaved_intf="l1_h2", keep_addr_on_down=1, verbose=True)
-    # add_vrf_cmd(l1, vrf_name="group2", table_id=20, enslaved_intf="l1_h2", keep_addr_on_down=1, verbose=True)
-    add_vrf_cmd(l2, vrf_name="group1", table_id=10, enslaved_intf="l2_h3", keep_addr_on_down=1, verbose=True)
-    add_vrf_cmd(l2, vrf_name="group1", table_id=10, enslaved_intf="l2_h4", keep_addr_on_down=1, verbose=True)
-    # add_vrf_cmd(l2, vrf_name="group2", table_id=20, enslaved_intf="l2_h4", keep_addr_on_down=1, verbose=True)
-    add_vrf_cmd(l3, vrf_name="group1", table_id=10, enslaved_intf="l3_h5", keep_addr_on_down=1, verbose=True)
-    add_vrf_cmd(l3, vrf_name="group1", table_id=10, enslaved_intf="l3_h6", keep_addr_on_down=1, verbose=True)
-    # add_vrf_cmd(l3, vrf_name="group2", table_id=20, enslaved_intf="l3_h6", keep_addr_on_down=1, verbose=True)
-    add_vrf_cmd(l4, vrf_name="group1", table_id=10, enslaved_intf="l4_h7", keep_addr_on_down=1, verbose=True)
-    add_vrf_cmd(l4, vrf_name="group1", table_id=10, enslaved_intf="l4_h8", keep_addr_on_down=1, verbose=True)
-    # add_vrf_cmd(l4, vrf_name="group2", table_id=20, enslaved_intf="l4_h8", keep_addr_on_down=1, verbose=True)
-    add_vrf_cmd(l5, vrf_name="group1", table_id=10, enslaved_intf="l5_h9", keep_addr_on_down=1, verbose=True)
-    add_vrf_cmd(l5, vrf_name="group1", table_id=10, enslaved_intf="l5_h10", keep_addr_on_down=1, verbose=True)
-    # add_vrf_cmd(l5, vrf_name="group2", table_id=20, enslaved_intf="l5_h10", keep_addr_on_down=1, verbose=True)
-    add_vrf_cmd(l6, vrf_name="group1", table_id=10, enslaved_intf="l6_h11", keep_addr_on_down=1, verbose=True)
-    add_vrf_cmd(l6, vrf_name="group1", table_id=10, enslaved_intf="l6_h12", keep_addr_on_down=1, verbose=True)
-    # add_vrf_cmd(l6, vrf_name="group2", table_id=20, enslaved_intf="l6_h12", keep_addr_on_down=1, verbose=True)
-    add_vrf_cmd(l7, vrf_name="group1", table_id=10, enslaved_intf="l7_h13", keep_addr_on_down=1, verbose=True)
-    add_vrf_cmd(l7, vrf_name="group1", table_id=10, enslaved_intf="l7_h14", keep_addr_on_down=1, verbose=True)
-    # add_vrf_cmd(l7, vrf_name="group2", table_id=20, enslaved_intf="l7_h14", keep_addr_on_down=1, verbose=True)
-    add_vrf_cmd(l8, vrf_name="group1", table_id=10, enslaved_intf="l8_h15", keep_addr_on_down=1, verbose=True)
-    add_vrf_cmd(l8, vrf_name="group1", table_id=10, enslaved_intf="l8_h16", keep_addr_on_down=1, verbose=True)
-    # add_vrf_cmd(l8, vrf_name="group2", table_id=20, enslaved_intf="l8_h16", keep_addr_on_down=1, verbose=True)
+    add_vrf_cmd(l2, vrf_name="group1", table_id=10, enslaved_intf="l2_h2", keep_addr_on_down=1, verbose=True)
+    add_vrf_cmd(l3, vrf_name="group1", table_id=10, enslaved_intf="l3_h3", keep_addr_on_down=1, verbose=True)
+    add_vrf_cmd(l4, vrf_name="group1", table_id=10, enslaved_intf="l4_h4", keep_addr_on_down=1, verbose=True)
+    add_vrf_cmd(l5, vrf_name="group1", table_id=10, enslaved_intf="l5_h5", keep_addr_on_down=1, verbose=True)
+    add_vrf_cmd(l6, vrf_name="group1", table_id=10, enslaved_intf="l6_h6", keep_addr_on_down=1, verbose=True)
     
     # Start Network
     net.start()
@@ -445,8 +403,6 @@ def setup() -> IPNetwork:
     set_frr_superspine(ss4, "1.1.1.4")
     set_frr_superspine(ss5, "1.1.1.5")
     set_frr_superspine(ss6, "1.1.1.6")
-    set_frr_superspine(ss7, "1.1.1.7")
-    set_frr_superspine(ss8, "1.1.1.8")
     
     set_frr_spine(s1, "2.2.2.1", 65103, l1, l2)
     set_frr_spine(s2, "2.2.2.2", 65104, l1, l2)
@@ -454,8 +410,6 @@ def setup() -> IPNetwork:
     set_frr_spine(s4, "2.2.2.4", 65204, l3, l4)
     set_frr_spine(s5, "2.2.2.5", 65303, l5, l6)
     set_frr_spine(s6, "2.2.2.6", 65304, l5, l6)
-    set_frr_spine(s7, "2.2.2.7", 65403, l7, l8)
-    set_frr_spine(s8, "2.2.2.8", 65404, l7, l8)
     
     set_frr_leaf(l1, "3.3.3.1", 65101, s1, s2)
     set_frr_leaf(l2, "3.3.3.2", 65102, s1, s2)
@@ -463,8 +417,6 @@ def setup() -> IPNetwork:
     set_frr_leaf(l4, "3.3.3.4", 65202, s3, s4)
     set_frr_leaf(l5, "3.3.3.5", 65301, s5, s6)
     set_frr_leaf(l6, "3.3.3.6", 65302, s5, s6)
-    set_frr_leaf(l7, "3.3.3.7", 65401, s7, s8)
-    set_frr_leaf(l8, "3.3.3.8", 65402, s7, s8)
 
     return net
 

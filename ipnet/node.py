@@ -20,17 +20,17 @@ class IPNode(Node):
     def config(self, **params):
         self.cmd("ifconfig lo up")
 
-    def set_ip_cmd(self, ip, intf_name):
-        self.cmd("ip addr add {} dev {}".format(ip, intf_name))
+    def set_ip_cmd(self, ip, intf_name, verbose=False):
+        self.cmd("ip addr add {} dev {}".format(ip, intf_name), verbose=verbose)
 
-    def set_ipv6_cmd(self, ipv6, intf_name):
-        self.cmd("ip -6 addr add {} dev {}".format(ipv6, intf_name))
+    def set_ipv6_cmd(self, ipv6, intf_name, verbose=False):
+        self.cmd("ip -6 addr add {} dev {}".format(ipv6, intf_name), verbose=verbose)
 
-    def add_default_route_cmd(self, intf: str, nexthop: str):
-        self.cmd("ip route add default dev {} via {}".format(intf, nexthop))
+    def add_default_route_cmd(self, intf: str, nexthop: str, verbose=False):
+        self.cmd("ip route add default dev {} via {}".format(intf, nexthop), verbose=verbose)
 
-    def add_v6_default_route_cmd(self, intf: str, nexthop: str):
-        self.cmd("ip -6 route add default dev {} via {}".format(intf, nexthop))
+    def add_v6_default_route_cmd(self, intf: str, nexthop: str, verbose=False):
+        self.cmd("ip -6 route add default dev {} via {}".format(intf, nexthop), verbose=verbose)
 
     def tcpdump(self, intf, verbose=False):
         cmd = "tcpdump -i " + intf + " -w " + intf + ".pcap &"
@@ -162,7 +162,7 @@ class FRR(SRv6Router):
         rendered = template.render(**params)
         return self.cmd("cat << 'EOF' | tee {} \n".format(file) + rendered + "\n" + "EOF")
 
-    def vtysh_cmd(self, cmd="", json_loads=False, verbose=True) -> str or dict:
+    def vtysh_cmd(self, cmd="", json_loads=False, verbose=False) -> str or dict:
         """exec vtysh commands"""
         cmds = cmd.split("\n")
         vtysh_cmd = "vtysh"

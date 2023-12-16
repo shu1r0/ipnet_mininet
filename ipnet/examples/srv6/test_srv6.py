@@ -1,7 +1,7 @@
 from time import sleep
 from unittest import main, TestCase
 
-from ipnet.examples.srv6 import srv6_vpn_10, simple_srv6_6, simple_srv6_6_vpp
+from ipnet.examples.srv6 import srv6_vpn_10, simple_srv6_6, simple_srv6_6_vpp, clos3_srv6vpn_24
 
 
 class SRv6_VPN_10Test(TestCase):
@@ -48,6 +48,20 @@ class Simple_SRv6_6_VPP(TestCase):
     def test_reachability(self):
         sleep(5)
         _, r = self.net.ping_to_ip(self.net.get("h1"), "192.168.2.2", times=2)
+        self.assertEqual(True, r > 0)
+
+    def tearDown(self):
+        self.net.stop()
+
+
+class Clos3_SRv6VPN_24(TestCase):
+
+    def setUp(self) -> None:
+        self.net = clos3_srv6vpn_24.setup()
+
+    def test_reachability(self):
+        sleep(20)
+        _, r = self.net.ping_to_ipv6(self.net.get("h1"), "fd00:6::2", times=2)
         self.assertEqual(True, r > 0)
 
     def tearDown(self):

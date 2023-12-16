@@ -85,6 +85,11 @@ mininet> vtysh r1 r2
 ![example1](docs/images/ex1.JPG)
 
 
+## `examples/`
+`clos/clos3_40.py`
+![clos40](./ipnet/examples/clos/clos3_40.drawio.png)
+
+
 ## Test
 ```bash
 sudo python3 -m unittest discover examples
