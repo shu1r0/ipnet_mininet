@@ -130,7 +130,7 @@ class FRR(SRv6Router):
         if self.daemons:
             self.render_conf_file("/etc/frr/daemons", self.daemons, self.daemons_param)
         else:
-            self.render_conf("/etc/frr/daemons", Template(pkgutil.get_data(__name__, "conf/daemons.j2").decode()),
+            self.render_conf("/etc/frr/daemons", Template(pkgutil.get_data(__name__, "conf/frr/daemons.j2").decode()),
                              self.daemons_param)
 
     def set_vtysh_conf(self):
@@ -138,7 +138,7 @@ class FRR(SRv6Router):
         if self.vtysh_conf:
             self.render_conf_file("/etc/frr/vtysh.conf", self.vtysh_conf, {"name": self.name})
         else:
-            self.render_conf("/etc/frr/vtysh.conf", Template(pkgutil.get_data(__name__, "conf/vtysh.conf.j2").decode()),
+            self.render_conf("/etc/frr/vtysh.conf", Template(pkgutil.get_data(__name__, "conf/frr/vtysh.conf.j2").decode()),
                              {"name": self.name})
 
     def set_frr_conf(self):
@@ -146,7 +146,7 @@ class FRR(SRv6Router):
         if self.frr_conf:
             self.render_conf_file("/etc/frr/frr.conf", self.frr_conf, {"content": self.frr_conf_content})
         else:
-            self.render_conf("/etc/frr/frr.conf", Template(pkgutil.get_data(__name__, "conf/frr.conf.j2").decode()),
+            self.render_conf("/etc/frr/frr.conf", Template(pkgutil.get_data(__name__, "conf/frr/frr.conf.j2").decode()),
                              {"content": self.frr_conf_content})
 
     def render_conf_file(self, file, template_file, params=None):
@@ -209,21 +209,33 @@ class SimpleBGPRouter(FRR):
         if self.frr_conf:
             self.render_conf_file("/etc/frr/frr.conf", self.frr_conf, params)
         else:
-            self.render_conf("/etc/frr/frr.conf", Template(pkgutil.get_data(__name__, "conf/frr_bgp.conf.j2").decode()),
+            self.render_conf("/etc/frr/frr.conf", Template(pkgutil.get_data(__name__, "conf/frr/frr_bgp.conf.j2").decode()),
                              params)
 
 
 class VPP(RouterBase):
 
     vpp_sock_dir = "/run/vpp/"
+    vpp_conf_dir = "/etc/vpp/"
+    vpp_log_dir = "/var/log/vpp/"
 
-    def __init__(self, name, sock=None, start_conf=None, start_conf_file=None, **kwargs):
-        super().__init__(name, **kwargs)
+    def __init__(self, name, sock=None, vpp_start_args=None, startup_conf=None, **params):
+        params.setdefault("privateDirs", [])
+        params["privateDirs"].extend([self.vpp_conf_dir, self.vpp_log_dir])
+        super().__init__(name, **params)
+        
+        self.startup_conf = startup_conf
+        
         self.sock_name = sock if sock else "cli-ipnet-vpp-{}.sock".format(self.name)
         self.sock_path = self.vpp_sock_dir + self.sock_name
         self.api_pre = "ipnet-vpp-{}".format(self.name)
-        _vpp_start_args_default = "unix {cli-listen %s} api-segment { prefix %s }" % (self.sock_path, self.api_pre)
-        self.vpp_start_args = start_conf if start_conf else _vpp_start_args_default
+        
+        self.startup_params = {
+            "unix_cli_listen": self.sock_path,
+            "api_segment_prefix": self.api_pre,
+        }
+        _vpp_start_args_default = "-c " + self.startup_conf if self.startup_conf else "-c /etc/vpp/startup.conf"
+        self.vpp_start_args = vpp_start_args if vpp_start_args else _vpp_start_args_default
         self._verbose = False
 
     def config(self, **params):
@@ -240,3 +252,11 @@ class VPP(RouterBase):
 
     def vppctl(self, *args, verbose=True):
         return self.cmd("vppctl", "-s", self.sock_path, *args, verbose=verbose)
+
+    def set_startup_conf(self):
+        """set startup conf"""
+        if self.startup_conf:
+            self.render_conf_file("/etc/vpp/startup.conf", self.startup_conf, self.startup_params)
+        else:
+            self.render_conf("/etc/vpp/startup.conf", Template(pkgutil.get_data(__name__, "conf/vpp/starup.conf.j2").decode()),
+                             self.startup_params)

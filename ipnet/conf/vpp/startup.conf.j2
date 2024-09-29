@@ -1,0 +1,21 @@
+
+unix {
+  nodaemon
+  log /var/log/vpp/vpp.log
+  full-coredump
+  cli-listen {{ unix_cli_listen }}
+  gid vpp
+}
+
+api-trace {
+  on
+  prefix {{ api_segment_prefix }}
+}
+
+api-segment {
+  gid vpp
+}
+
+socksvr {
+  default
+}
